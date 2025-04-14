@@ -6,10 +6,10 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Family Galleries',
-    default: 'Family Galleries | Preserving Memories',
+    template: '%s | Sipikidi\'s Galleries',
+    default: 'Sipikidi\'s Galleries | Lưu giữ kỷ niệm',
   },
-  description: 'A beautiful collection of family photo galleries from various events and occasions.',
+  description: 'Một bộ sưu tập các bức ảnh gia đình từ các sự kiện và lễ hội.',
   keywords: ['family', 'photos', 'gallery', 'memories', 'events', 'photography'],
 };
 
