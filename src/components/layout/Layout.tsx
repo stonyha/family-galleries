@@ -11,12 +11,12 @@ type LayoutProps = {
 
 export default function Layout({ 
   children, 
-  title = 'Family Galleries', 
+  title = 'Sipikidi\'s Galleries', 
   description = 'A collection of family photo galleries and memories' 
 }: LayoutProps) {
-  const fullTitle = title === 'Family Galleries' 
+  const fullTitle = title === 'Sipikidi\'s Galleries' 
     ? title 
-    : `${title} | Family Galleries`;
+    : `${title} | Sipikidi's Galleries`;
   
   return (
     <>

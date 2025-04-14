@@ -2,12 +2,12 @@ import Layout from '@/components/layout/Layout';
 
 export default function GalleriesLoading() {
   return (
-    <Layout title="Loading Galleries">
+    <Layout title="Đang tải thư viện ảnh">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Photo Galleries</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Thư viện ảnh</h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Loading our collection of family photos...
+            Đang tải bộ sưu tập các bức ảnh gia đình...
           </p>
         </div>
         

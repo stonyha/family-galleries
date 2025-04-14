@@ -5,8 +5,8 @@ import { getHomePage, getFeaturedGalleries } from '@/lib/contentful';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Family Galleries | Preserving Memories',
-  description: 'A collection of family photo galleries from various events and occasions.',
+  title: 'Sipikidi\'s Galleries | Lưu giữ kỷ niệm',
+  description: 'Một bộ sưu tập các bức ảnh gia đình từ các sự kiện và lễ hội.',
 };
 
 export const revalidate = 3600; // Revalidate the data at most every hour
@@ -47,8 +47,8 @@ export default async function HomePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <GalleryGrid
           galleries={featuredGalleries}
-          title="Featured Galleries"
-          emptyMessage="No galleries have been created yet. Check back soon!"
+          title="Bộ sưu tập nổi bật"
+          emptyMessage="Chưa có bộ sưu tập nào được tạo. Hãy quay lại sau!"
         />
       </div>
     </Layout>

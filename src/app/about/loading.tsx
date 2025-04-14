@@ -2,7 +2,7 @@ import Layout from '@/components/layout/Layout';
 
 export default function AboutLoading() {
   return (
-    <Layout title="Loading About">
+    <Layout title="Đang tải về chúng tôi">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
           <div className="h-10 w-48 bg-gray-200 animate-pulse mx-auto mb-4 rounded"></div>

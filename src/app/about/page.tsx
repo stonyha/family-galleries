@@ -4,8 +4,8 @@ import Layout from '@/components/layout/Layout';
 import { getAboutPage } from '@/lib/contentful';
 
 export const metadata: Metadata = {
-  title: 'About Us | Family Galleries',
-  description: 'Learn more about our family and this photo gallery website.',
+  title: 'Về chúng tôi | Sipikidi\'s Galleries',
+  description: 'Tìm hiểu thêm về gia đình chúng tôi và trang web thư viện ảnh này.',
 };
 
 export const revalidate = 3600; // Revalidate the data at most every hour
@@ -119,8 +119,8 @@ export default async function AboutPage() {
   
   return (
     <Layout
-      title="About Us"
-      description="Learn more about our family and this photo gallery website"
+      title="Về chúng tôi"
+      description="Tìm hiểu thêm về gia đình chúng tôi và trang web thư viện ảnh này"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">

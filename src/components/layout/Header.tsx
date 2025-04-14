@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 
 export default function Header() {
@@ -13,9 +14,19 @@ export default function Header() {
           <div className="flex items-center">
             <Link 
               href="/" 
-              className="flex-shrink-0 flex items-center text-2xl font-bold text-amber-600"
+              className="flex-shrink-0 flex items-center"
             >
-              Family Galleries
+              <div className="flex items-center">
+                <Image 
+                  src="/images/family-logox64.png"
+                  alt="Family Galleries Logo"
+                  width={64}
+                  height={64}
+                  priority
+                  className="mr-2"
+                />
+                <span className="text-xl font-bold text-amber-600">Sipikidi's Galleries</span>
+              </div>
             </Link>
           </div>
           
@@ -25,19 +36,46 @@ export default function Header() {
               href="/"
               className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
             >
-              Home
+              <div className="flex items-center">
+                <Image 
+                  src="/images/home-menux48.png"
+                  alt="Home"
+                  width={48}
+                  height={48}
+                  priority
+                  className="mr-2"
+                />
+              </div>
             </Link>
             <Link
               href="/galleries"
               className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
             >
-              Galleries
+              <div className="flex items-center">
+                <Image 
+                  src="/images/galleries-menux48.png"
+                  alt="Galleries"
+                  width={48}
+                  height={48}
+                  priority
+                  className="mr-2"
+                />
+              </div>
             </Link>
             <Link
               href="/about"
               className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
             >
-              About
+              <div className="flex items-center">
+                <Image 
+                  src="/images/about-us-menux48.png"
+                  alt="About Us"
+                  width={48}
+                  height={48}
+                  priority
+                  className="mr-2"
+                />
+              </div>
             </Link>
           </nav>
           
@@ -96,21 +134,21 @@ export default function Header() {
               className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
               onClick={() => setIsMenuOpen(false)}
             >
-              Home
+              Trang chủ
             </Link>
             <Link
               href="/galleries"
               className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
               onClick={() => setIsMenuOpen(false)}
             >
-              Galleries
+              Thư viện
             </Link>
             <Link
               href="/about"
               className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
               onClick={() => setIsMenuOpen(false)}
             >
-              About
+              Về chúng tôi
             </Link>
           </div>
         </div>
