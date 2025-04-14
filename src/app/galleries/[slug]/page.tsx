@@ -1,4 +1,4 @@
-import { Metadata } from 'next';
+import { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -7,11 +7,15 @@ import PhotoGrid from '@/components/gallery/PhotoGrid';
 import { getGalleryBySlug, getGalleries } from '@/lib/contentful';
 import { formatEventDate } from '@/utils/dateUtils';
 
-type GalleryPageProps = {
-  params: {
-    slug: string;
-  };
-};
+// Define params type as per Next.js convention
+type PageParams = {
+  slug: string;
+}
+
+// Define search params type as per Next.js convention
+type PageSearchParams = {
+  [key: string]: string | string[] | undefined;
+}
 
 export const revalidate = 3600; // Revalidate the data at most every hour
 
@@ -25,7 +29,10 @@ export async function generateStaticParams() {
 }
 
 // Generate metadata for the page
-export async function generateMetadata({ params }: GalleryPageProps): Promise<Metadata> {
+export async function generateMetadata(
+  { params }: { params: PageParams },
+  parent: ResolvingMetadata
+): Promise<Metadata> {
   const { slug } = params;
   const gallery = await getGalleryBySlug(slug);
   
@@ -43,7 +50,12 @@ export async function generateMetadata({ params }: GalleryPageProps): Promise<Me
   };
 }
 
-export default async function GalleryPage({ params }: GalleryPageProps) {
+// Define the page component
+export default async function GalleryPage({
+  params,
+}: {
+  params: PageParams;
+}) {
   const { slug } = params;
   const gallery = await getGalleryBySlug(slug);
   
