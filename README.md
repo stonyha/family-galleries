@@ -1,36 +1,122 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Family Galleries
 
-## Getting Started
+A modern, responsive website for showcasing family photo galleries, built with Next.js and Contentful CMS.
 
-First, run the development server:
+## Features
+
+- Responsive design optimized for all devices
+- Homepage with featured galleries and family introduction
+- Gallery list page showing all available photo galleries
+- Gallery detail page with lightbox photo viewing
+- About page with customizable content
+- SEO-friendly structure
+- Image optimization and lazy loading
+
+## Tech Stack
+
+- **Frontend**: Next.js 13+ (App Router), TypeScript, React
+- **Styling**: TailwindCSS
+- **CMS**: Contentful
+- **Deployment**: Vercel (recommended)
+
+## Prerequisites
+
+- Node.js 16.8.0 or later
+- npm or yarn
+- A Contentful account (free tier works fine)
+
+## Setup Instructions
+
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd family-galleries
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+# or
+yarn
+```
+
+### 3. Set Up Contentful
+
+1. Create a Contentful account at [contentful.com](https://www.contentful.com/)
+2. Create a new space in Contentful
+3. Import the content model:
+   - Go to Settings > Content model in Contentful
+   - Use the provided `contentful-content-model.json` file to import the model
+
+### 4. Configure Environment Variables
+
+1. Copy the `.env.local.example` file to `.env.local`:
+
+```bash
+cp .env.local.example .env.local
+```
+
+2. Fill in your Contentful details:
+   - `CONTENTFUL_SPACE_ID`: Your Contentful space ID (found in Settings > API keys)
+   - `CONTENTFUL_ACCESS_TOKEN`: Your Contentful Content Delivery API access token
+   - `CONTENTFUL_ENVIRONMENT`: Usually "master" (default)
+   - `NEXT_PUBLIC_SITE_NAME`: Your family gallery website name
+
+### 5. Add Content in Contentful
+
+1. Create a Home Page entry
+2. Create an About Page entry
+3. Create Gallery entries with photos
+
+### 6. Run the Development Server
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The easiest way to deploy this application is using [Vercel](https://vercel.com), the platform built by the creators of Next.js.
 
-## Learn More
+1. Push your code to a Git repository (GitHub, GitLab, or Bitbucket)
+2. Import the project in Vercel
+3. Add your environment variables in the Vercel dashboard
+4. Deploy
 
-To learn more about Next.js, take a look at the following resources:
+## Content Management
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Gallery Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Each gallery consists of:
+- **Title**: The name of the gallery/event
+- **Slug**: URL-friendly version of the title (e.g., "summer-vacation-2023")
+- **Description**: Brief information about the event
+- **Event Date**: When the event occurred
+- **Cover Image**: Main image displayed on gallery cards
+- **Images**: Collection of photos in the gallery
+- **Location**: Where the event took place (optional)
+- **Tags**: Keywords to categorize the gallery (optional)
 
-## Deploy on Vercel
+### Home Page Content
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The home page displays:
+- **Title**: Main headline
+- **Introduction**: Brief welcome text
+- **Hero Image**: Large featured image
+- **Featured Galleries**: Selected galleries to highlight (if none are set, most recent galleries will be shown)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Customization
+
+- **Colors**: Edit the TailwindCSS configuration in `tailwind.config.js`
+- **Layout**: Modify components in the `src/components/layout` directory
+- **Styling**: Adjust styles in individual component files
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

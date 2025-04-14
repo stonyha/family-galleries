@@ -1,0 +1,157 @@
+{
+  "contentTypes": [
+    {
+      "id": "gallery",
+      "name": "Gallery",
+      "description": "A photo gallery for a family event",
+      "displayField": "title",
+      "fields": [
+        {
+          "id": "title",
+          "name": "Title",
+          "type": "Symbol",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "slug",
+          "name": "Slug",
+          "type": "Symbol",
+          "required": true,
+          "localized": false,
+          "validations": [
+            {
+              "unique": true
+            }
+          ]
+        },
+        {
+          "id": "description",
+          "name": "Description",
+          "type": "Text",
+          "required": false,
+          "localized": false
+        },
+        {
+          "id": "eventDate",
+          "name": "Event Date",
+          "type": "Date",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "coverImage",
+          "name": "Cover Image",
+          "type": "Link",
+          "linkType": "Asset",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "images",
+          "name": "Images",
+          "type": "Array",
+          "items": {
+            "type": "Link",
+            "linkType": "Asset"
+          },
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "location",
+          "name": "Location",
+          "type": "Symbol",
+          "required": false,
+          "localized": false
+        },
+        {
+          "id": "tags",
+          "name": "Tags",
+          "type": "Array",
+          "items": {
+            "type": "Symbol"
+          },
+          "required": false,
+          "localized": false
+        }
+      ]
+    },
+    {
+      "id": "homePage",
+      "name": "Home Page",
+      "description": "Content for the home page",
+      "displayField": "title",
+      "fields": [
+        {
+          "id": "title",
+          "name": "Title",
+          "type": "Symbol",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "intro",
+          "name": "Introduction",
+          "type": "Text",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "heroImage",
+          "name": "Hero Image",
+          "type": "Link",
+          "linkType": "Asset",
+          "required": false,
+          "localized": false
+        },
+        {
+          "id": "featuredGalleries",
+          "name": "Featured Galleries",
+          "type": "Array",
+          "items": {
+            "type": "Link",
+            "linkType": "Entry",
+            "validations": [
+              {
+                "linkContentType": ["gallery"]
+              }
+            ]
+          },
+          "required": false,
+          "localized": false
+        }
+      ]
+    },
+    {
+      "id": "aboutPage",
+      "name": "About Page",
+      "description": "Content for the about page",
+      "displayField": "title",
+      "fields": [
+        {
+          "id": "title",
+          "name": "Title",
+          "type": "Symbol",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "content",
+          "name": "Content",
+          "type": "RichText",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "familyImage",
+          "name": "Family Image",
+          "type": "Link",
+          "linkType": "Asset",
+          "required": false,
+          "localized": false
+        }
+      ]
+    }
+  ]
+} 

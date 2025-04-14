@@ -1,0 +1,481 @@
+{
+  "contentTypes": [
+    {
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "2f6a6fx5gcj9"
+          }
+        },
+        "id": "gallery",
+        "type": "ContentType",
+        "createdAt": "2025-04-14T11:22:42.429Z",
+        "updatedAt": "2025-04-14T11:22:42.429Z",
+        "environment": {
+          "sys": {
+            "id": "master",
+            "type": "Link",
+            "linkType": "Environment"
+          }
+        },
+        "publishedVersion": 1,
+        "publishedAt": "2025-04-14T11:22:42.429Z",
+        "firstPublishedAt": "2025-04-14T11:22:42.429Z",
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0"
+          }
+        },
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0"
+          }
+        },
+        "publishedCounter": 1,
+        "version": 1,
+        "publishedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0"
+          }
+        }
+      },
+      "displayField": "title",
+      "name": "Gallery",
+      "description": "A photo gallery for a family event",
+      "fields": [
+        {
+          "id": "title",
+          "name": "Title",
+          "type": "Symbol",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "slug",
+          "name": "Slug",
+          "type": "Symbol",
+          "required": true,
+          "localized": false,
+          "validations": [
+            {
+              "unique": true
+            }
+          ]
+        },
+        {
+          "id": "description",
+          "name": "Description",
+          "type": "Text",
+          "required": false,
+          "localized": false
+        },
+        {
+          "id": "eventDate",
+          "name": "Event Date",
+          "type": "Date",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "coverImage",
+          "name": "Cover Image",
+          "type": "Link",
+          "linkType": "Asset",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "images",
+          "name": "Images",
+          "type": "Array",
+          "items": {
+            "type": "Link",
+            "linkType": "Asset"
+          },
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "location",
+          "name": "Location",
+          "type": "Symbol",
+          "required": false,
+          "localized": false
+        },
+        {
+          "id": "tags",
+          "name": "Tags",
+          "type": "Array",
+          "items": {
+            "type": "Symbol"
+          },
+          "required": false,
+          "localized": false
+        }
+      ]
+    },
+    {
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "2f6a6fx5gcj9"
+          }
+        },
+        "id": "homePage",
+        "type": "ContentType",
+        "createdAt": "2025-04-14T11:22:42.429Z",
+        "updatedAt": "2025-04-14T11:22:42.429Z",
+        "environment": {
+          "sys": {
+            "id": "master",
+            "type": "Link",
+            "linkType": "Environment"
+          }
+        },
+        "publishedVersion": 1,
+        "publishedAt": "2025-04-14T11:22:42.429Z",
+        "firstPublishedAt": "2025-04-14T11:22:42.429Z",
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0"
+          }
+        },
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0"
+          }
+        },
+        "publishedCounter": 1,
+        "version": 1,
+        "publishedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0"
+          }
+        }
+      },
+      "displayField": "title",
+      "name": "Home Page",
+      "description": "Content for the home page",
+      "fields": [
+        {
+          "id": "title",
+          "name": "Title",
+          "type": "Symbol",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "intro",
+          "name": "Introduction",
+          "type": "Text",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "heroImage",
+          "name": "Hero Image",
+          "type": "Link",
+          "linkType": "Asset",
+          "required": false,
+          "localized": false
+        },
+        {
+          "id": "featuredGalleries",
+          "name": "Featured Galleries",
+          "type": "Array",
+          "items": {
+            "type": "Link",
+            "linkType": "Entry",
+            "validations": [
+              {
+                "linkContentType": ["gallery"]
+              }
+            ]
+          },
+          "required": false,
+          "localized": false
+        }
+      ]
+    },
+    {
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "2f6a6fx5gcj9"
+          }
+        },
+        "id": "aboutPage",
+        "type": "ContentType",
+        "createdAt": "2025-04-14T11:22:42.429Z",
+        "updatedAt": "2025-04-14T11:22:42.429Z",
+        "environment": {
+          "sys": {
+            "id": "master",
+            "type": "Link",
+            "linkType": "Environment"
+          }
+        },
+        "publishedVersion": 1,
+        "publishedAt": "2025-04-14T11:22:42.429Z",
+        "firstPublishedAt": "2025-04-14T11:22:42.429Z",
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0"
+          }
+        },
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0"
+          }
+        },
+        "publishedCounter": 1,
+        "version": 1,
+        "publishedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0"
+          }
+        }
+      },
+      "displayField": "title",
+      "name": "About Page",
+      "description": "Content for the about page",
+      "fields": [
+        {
+          "id": "title",
+          "name": "Title",
+          "type": "Symbol",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "content",
+          "name": "Content",
+          "type": "RichText",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "familyImage",
+          "name": "Family Image",
+          "type": "Link",
+          "linkType": "Asset",
+          "required": false,
+          "localized": false
+        }
+      ]
+    }
+  ],
+  "editorInterfaces": [
+    {
+      "sys": {
+        "id": "default",
+        "type": "EditorInterface",
+        "space": {
+          "sys": {
+            "id": "2f6a6fx5gcj9",
+            "type": "Link",
+            "linkType": "Space"
+          }
+        },
+        "version": 1,
+        "createdAt": "2025-04-14T11:22:42.429Z",
+        "createdBy": {
+          "sys": {
+            "id": "0",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "updatedAt": "2025-04-14T11:22:42.429Z",
+        "updatedBy": {
+          "sys": {
+            "id": "0",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "contentType": {
+          "sys": {
+            "id": "gallery",
+            "type": "Link",
+            "linkType": "ContentType"
+          }
+        },
+        "environment": {
+          "sys": {
+            "id": "master",
+            "type": "Link",
+            "linkType": "Environment"
+          }
+        }
+      },
+      "controls": []
+    },
+    {
+      "sys": {
+        "id": "default",
+        "type": "EditorInterface",
+        "space": {
+          "sys": {
+            "id": "2f6a6fx5gcj9",
+            "type": "Link",
+            "linkType": "Space"
+          }
+        },
+        "version": 1,
+        "createdAt": "2025-04-14T11:22:42.429Z",
+        "createdBy": {
+          "sys": {
+            "id": "0",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "updatedAt": "2025-04-14T11:22:42.429Z",
+        "updatedBy": {
+          "sys": {
+            "id": "0",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "contentType": {
+          "sys": {
+            "id": "homePage",
+            "type": "Link",
+            "linkType": "ContentType"
+          }
+        },
+        "environment": {
+          "sys": {
+            "id": "master",
+            "type": "Link",
+            "linkType": "Environment"
+          }
+        }
+      },
+      "controls": []
+    },
+    {
+      "sys": {
+        "id": "default",
+        "type": "EditorInterface",
+        "space": {
+          "sys": {
+            "id": "2f6a6fx5gcj9",
+            "type": "Link",
+            "linkType": "Space"
+          }
+        },
+        "version": 1,
+        "createdAt": "2025-04-14T11:22:42.429Z",
+        "createdBy": {
+          "sys": {
+            "id": "0",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "updatedAt": "2025-04-14T11:22:42.429Z",
+        "updatedBy": {
+          "sys": {
+            "id": "0",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "contentType": {
+          "sys": {
+            "id": "aboutPage",
+            "type": "Link",
+            "linkType": "ContentType"
+          }
+        },
+        "environment": {
+          "sys": {
+            "id": "master",
+            "type": "Link",
+            "linkType": "Environment"
+          }
+        }
+      },
+      "controls": []
+    }
+  ],
+  "locales": [
+    {
+      "name": "English (United States)",
+      "code": "en-US",
+      "fallbackCode": null,
+      "default": true,
+      "contentManagementApi": true,
+      "contentDeliveryApi": true,
+      "optional": false,
+      "sys": {
+        "type": "Locale",
+        "id": "en-US",
+        "version": 1,
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "2f6a6fx5gcj9"
+          }
+        },
+        "environment": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Environment",
+            "id": "master"
+          }
+        },
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0"
+          }
+        },
+        "createdAt": "2025-04-14T11:22:42.429Z",
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0"
+          }
+        },
+        "updatedAt": "2025-04-14T11:22:42.429Z"
+      }
+    }
+  ],
+  "entries": [],
+  "assets": [],
+  "webhooks": [],
+  "roles": [],
+  "tags": []
+}
+
