@@ -39,26 +39,33 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
   const gridRef = useRef<HTMLDivElement>(null);
   
   // Minimum swipe distance in pixels to trigger navigation
-  const MIN_SWIPE_DISTANCE = 50;
+  const MIN_SWIPE_DISTANCE = 30;
   
   // Handle touch start event
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart({
-      x: e.touches[0].clientX,
-      y: e.touches[0].clientY
-    });
+  const handleTouchStart = (e: TouchEvent) => {
+    if (e.touches && e.touches.length > 0) {
+      setTouchStart({
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY
+      });
+    }
   };
   
   // Handle touch move event
-  const handleTouchMove = (e: React.TouchEvent) => {
+  const handleTouchMove = (e: TouchEvent) => {
+    if (!touchStart || !e.touches || e.touches.length === 0) return;
+    
     setTouchEnd({
       x: e.touches[0].clientX,
       y: e.touches[0].clientY
     });
+    
+    // Prevent default to avoid scrolling while swiping in the lightbox
+    e.preventDefault();
   };
   
   // Handle touch end event
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e: TouchEvent) => {
     if (!touchStart || !touchEnd) return;
     
     const distanceX = touchStart.x - touchEnd.x;
@@ -73,6 +80,11 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
         // Swiped right, go to previous image
         goToPrevious();
       }
+    } else if (!isHorizontalSwipe && distanceY < -MIN_SWIPE_DISTANCE) {
+      // Swiped down, close the lightbox
+      // We use a negative value since distanceY is calculated as touchStart.y - touchEnd.y
+      // So a downward swipe gives a negative value
+      closeLightbox();
     }
     
     // Reset touch positions
@@ -160,6 +172,25 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
       }
     }
   }, [nextImageIndex, lightboxOpen, slideDirection]);
+  
+  // Setup touch event handlers with passive: false option
+  useEffect(() => {
+    if (lightboxOpen && lightboxRef.current) {
+      const lightboxElement = lightboxRef.current;
+      
+      // Add event listeners with the passive: false option
+      lightboxElement.addEventListener('touchstart', handleTouchStart, { passive: true });
+      lightboxElement.addEventListener('touchmove', handleTouchMove, { passive: false });
+      lightboxElement.addEventListener('touchend', handleTouchEnd, { passive: true });
+      
+      // Clean up
+      return () => {
+        lightboxElement.removeEventListener('touchstart', handleTouchStart);
+        lightboxElement.removeEventListener('touchmove', handleTouchMove);
+        lightboxElement.removeEventListener('touchend', handleTouchEnd);
+      };
+    }
+  }, [lightboxOpen, touchStart, touchEnd]);
   
   const openLightbox = (index: number, event: React.MouseEvent<HTMLDivElement>) => {
     // Get the position of the clicked image for animation
@@ -290,6 +321,40 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
   const imageAlt = currentImage?.fields?.title || `Photo ${currentImageIndex + 1}`;
   const imageTitle = currentImage?.fields?.title || `Photo ${currentImageIndex + 1} of ${images.length}`;
   
+  // Add media query to show arrows on larger screens
+  useEffect(() => {
+    // Only run in browser environment
+    if (typeof window !== 'undefined') {
+      const updateArrowVisibility = () => {
+        const buttons = document.querySelectorAll('.lightbox-controls');
+        if (window.innerWidth >= 768) { // md breakpoint
+          buttons.forEach(btn => {
+            if (btn instanceof HTMLElement) {
+              btn.style.display = 'flex';
+            }
+          });
+        } else {
+          buttons.forEach(btn => {
+            if (btn instanceof HTMLElement) {
+              btn.style.display = 'none';
+            }
+          });
+        }
+      };
+      
+      // Initial update
+      updateArrowVisibility();
+      
+      // Update on resize
+      window.addEventListener('resize', updateArrowVisibility);
+      
+      // Cleanup
+      return () => {
+        window.removeEventListener('resize', updateArrowVisibility);
+      };
+    }
+  }, [lightboxOpen]);
+  
   if (!images || images.length === 0) {
     return (
       <div className="text-center py-12">
@@ -350,12 +415,9 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
       {lightboxOpen && (
         <div 
           ref={lightboxRef}
-          className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center lightbox-overlay"
+          className="fixed inset-0 z-[9999] bg-black bg-opacity-90 flex items-center justify-center lightbox-overlay"
           onClick={closeLightbox}
           onKeyDown={handleKeyDown}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
           tabIndex={0}
           style={{ 
             willChange: 'opacity',
@@ -363,7 +425,8 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
           }}
         >
           <button
-            className="absolute top-4 right-4 text-white z-10 p-2 lightbox-controls"
+            className="absolute top-4 right-4 text-white z-[10000] p-2 lightbox-controls
+            bg-black bg-opacity-50 rounded-full w-10 h-10 flex items-center justify-center"
             onClick={(e) => {
               e.stopPropagation();
               closeLightbox();
@@ -388,8 +451,9 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
           
           <button
             className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white p-2 lightbox-controls 
-            bg-black bg-opacity-50 rounded-full z-10 w-10 h-10 flex items-center justify-center
-            md:w-12 md:h-12 hover:bg-opacity-70 transition-all hidden md:flex"
+            bg-black bg-opacity-50 rounded-full z-10 w-10 h-10 items-center justify-center
+            md:w-12 md:h-12 hover:bg-opacity-70 transition-all"
+            style={{ display: 'none' }}
             onClick={(e) => {
               e.stopPropagation();
               goToPrevious();
@@ -415,8 +479,9 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
           
           <button
             className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white p-2 lightbox-controls
-            bg-black bg-opacity-50 rounded-full z-10 w-10 h-10 flex items-center justify-center
-            md:w-12 md:h-12 hover:bg-opacity-70 transition-all hidden md:flex"
+            bg-black bg-opacity-50 rounded-full z-10 w-10 h-10 items-center justify-center
+            md:w-12 md:h-12 hover:bg-opacity-70 transition-all"
+            style={{ display: 'none' }}
             onClick={(e) => {
               e.stopPropagation();
               goToNext();
@@ -442,7 +507,7 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
           
           <div 
             ref={lightboxImageRef}
-            className="max-h-[90vh] max-w-[90vw] w-full md:w-auto relative lightbox-content"
+            className="h-full w-full md:h-auto md:max-h-[90vh] md:max-w-[90vw] relative lightbox-content"
             onClick={(e) => e.stopPropagation()}
             style={{ 
               willChange: 'transform, opacity',
@@ -459,7 +524,7 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
                 alt={imageAlt}
                 width={1200}
                 height={800}
-                className="max-h-[90vh] w-full md:w-auto object-contain"
+                className="h-full w-full md:h-auto md:max-h-[90vh] object-contain"
                 priority={true}
                 quality={90}
                 style={{ 
