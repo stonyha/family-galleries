@@ -39,11 +39,25 @@ const getLastFetchTime = (): number => {
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState<UserProfile | null>(getUserFromStorage());
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [isLoading, setIsLoading] = useState(!user);
+  const [isClient, setIsClient] = useState(false);
+
+  // Use useEffect to update from session storage on client-side
+  useEffect(() => {
+    setIsClient(true);
+    const storedUser = getUserFromStorage();
+    if (storedUser) {
+      setUser(storedUser);
+      setIsLoading(false);
+    }
+  }, []);
 
   const fetchUserProfile = useCallback(async (retryCount = 0) => {
+    // Skip if not client-side yet
+    if (typeof window === 'undefined') return;
+    
     const now = Date.now();
     const lastFetch = getLastFetchTime();
     const minInterval = 2000; // 2 seconds minimum between requests
@@ -110,21 +124,20 @@ export default function Header() {
   }, [user]);
 
   useEffect(() => {
-    // Only fetch if we don't have a cached user
-    if (!user) {
+    if (isClient) {
       fetchUserProfile();
+      
+      // Set up infrequent refresh of user data
+      const refreshInterval = setInterval(() => {
+        // Only refresh if the page has been active
+        if (document.visibilityState === 'visible') {
+          fetchUserProfile();
+        }
+      }, 5 * 60 * 1000); // Every 5 minutes
+      
+      return () => clearInterval(refreshInterval);
     }
-    
-    // Set up infrequent refresh of user data
-    const refreshInterval = setInterval(() => {
-      // Only refresh if the page has been active
-      if (document.visibilityState === 'visible') {
-        fetchUserProfile();
-      }
-    }, 5 * 60 * 1000); // Every 5 minutes
-    
-    return () => clearInterval(refreshInterval);
-  }, [fetchUserProfile, user]);
+  }, [fetchUserProfile, isClient]);
 
   return (
     <header className="bg-white shadow-sm">
