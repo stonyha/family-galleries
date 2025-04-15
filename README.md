@@ -117,6 +117,52 @@ The home page displays:
 - **Layout**: Modify components in the `src/components/layout` directory
 - **Styling**: Adjust styles in individual component files
 
+## Authentication
+
+This project uses Auth0 for authentication. All routes are protected, requiring users to log in to access the website.
+
+### Auth0 Setup
+
+1. Create an account on [Auth0](https://auth0.com/) if you don't have one.
+2. Create a new application in the Auth0 dashboard.
+3. Set the application type to "Regular Web Application".
+4. Configure the following URLs:
+   - Allowed Callback URLs: `http://localhost:3000/api/auth/callback`
+   - Allowed Logout URLs: `http://localhost:3000`
+   - Allowed Web Origins: `http://localhost:3000`
+5. Copy the Auth0 Domain, Client ID, and Client Secret from your Auth0 application settings.
+6. Update your `.env.local` file with the following variables:
+
+```
+# Auth0 Configuration
+AUTH0_SECRET='use-a-secure-random-string'
+AUTH0_BASE_URL='http://localhost:3000'
+AUTH0_ISSUER_BASE_URL='https://your-auth0-domain.auth0.com'
+AUTH0_CLIENT_ID='your-client-id'
+AUTH0_CLIENT_SECRET='your-client-secret'
+AUTH0_SCOPE='openid profile email'
+```
+
+### Authentication Features
+
+- Protected Routes: All routes are protected using middleware.
+- Login/Logout: Login and logout buttons are available in the navigation bar.
+- User Profile: View user profile information at `/profile`.
+- HOC for Page Protection: Use the `withPageAuthRequired` HOC to protect individual pages.
+
+Example usage of HOC:
+
+```tsx
+'use client';
+import withPageAuthRequired from '@/utils/withPageAuthRequired';
+
+function ProtectedPage() {
+  return <div>This is a protected page</div>;
+}
+
+export default withPageAuthRequired(ProtectedPage);
+```
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
