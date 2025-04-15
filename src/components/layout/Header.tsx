@@ -2,18 +2,8 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect, useCallback } from 'react';
-
-type UserProfile = {
-  email?: string;
-  email_verified?: boolean;
-  name?: string;
-  nickname?: string;
-  picture?: string;
-  sub?: string;
-  updated_at?: string;
-  [key: string]: any;
-};
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { UserProfile } from '@/types/auth';
 
 // Store user data in session storage to avoid frequent API calls
 const getUserFromStorage = (): UserProfile | null => {
@@ -54,6 +44,9 @@ export default function Header() {
     }
   }, []);
 
+  // Memoize user ID to prevent unnecessary re-renders in useCallback
+  const userId = useMemo(() => user?.sub || null, [user?.sub]);
+
   const fetchUserProfile = useCallback(async (retryCount = 0) => {
     // Skip if not client-side yet
     if (typeof window === 'undefined') return;
@@ -63,25 +56,28 @@ export default function Header() {
     const minInterval = 2000; // 2 seconds minimum between requests
     
     // If we recently fetched and have a user already, don't fetch again
-    if (now - lastFetch < minInterval && user) {
-      console.log('Skipping fetch - too recent');
+    if (now - lastFetch < minInterval && userId) {
       return;
     }
     
     try {
       setIsLoading(true);
-      console.log('Fetching user profile');
       
       // Store current fetch time
       sessionStorage.setItem('last_auth_fetch', now.toString());
       
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      
       const response = await fetch('/api/auth/me', {
-        cache: 'no-store'
+        cache: 'no-store',
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
         if (response.status === 401) {
-          console.log('User not authenticated (401)');
           setUser(null);
           sessionStorage.removeItem('user_profile');
           return;
@@ -89,7 +85,6 @@ export default function Header() {
         
         if (response.status === 429 && retryCount < 3) {
           const waitTime = Math.pow(2, retryCount) * 1000; // Exponential backoff
-          console.log(`Rate limited. Retrying in ${waitTime}ms`);
           
           // Wait and retry with exponential backoff
           setTimeout(() => {
@@ -100,28 +95,23 @@ export default function Header() {
         
         // For other errors, get more details
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        console.error('Error fetching user profile:', {
-          status: response.status,
-          statusText: response.statusText,
-          errorData
-        });
         
         throw new Error(`Failed to fetch user profile: ${response.status} ${response.statusText}`);
       }
       
       const userData = await response.json();
-      console.log('User profile fetched successfully');
       setUser(userData);
       
       // Cache user data in session storage
       sessionStorage.setItem('user_profile', JSON.stringify(userData));
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('An unknown error occurred'));
-      console.error('Error in fetchUserProfile:', err);
+      if (err instanceof Error && err.name !== 'AbortError') {
+        setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+      }
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
+  }, [userId]); // Only depend on userId, not the entire user object
 
   useEffect(() => {
     if (isClient) {
@@ -133,11 +123,79 @@ export default function Header() {
         if (document.visibilityState === 'visible') {
           fetchUserProfile();
         }
-      }, 5 * 60 * 1000); // Every 5 minutes
+      }, 10 * 60 * 1000); // Every 10 minutes (increased to reduce API calls)
       
-      return () => clearInterval(refreshInterval);
+      // Listen for visibility changes
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible') {
+          const lastFetch = getLastFetchTime();
+          const now = Date.now();
+          // Only fetch if it's been more than 5 minutes since last fetch
+          if ((now - lastFetch) / 1000 > 300) {
+            fetchUserProfile();
+          }
+        }
+      };
+      
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+      
+      return () => {
+        clearInterval(refreshInterval);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      };
     }
   }, [fetchUserProfile, isClient]);
+
+  // Memoize navigation items to prevent re-renders
+  const navItems = useMemo(() => (
+    <>
+      <Link
+        href="/"
+        className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
+      >
+        <div className="flex items-center">
+          <Image 
+            src="/images/home-menux48.png"
+            alt="Home"
+            width={48}
+            height={48}
+            priority
+            className="mr-2"
+          />
+        </div>
+      </Link>
+      <Link
+        href="/galleries"
+        className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
+      >
+        <div className="flex items-center">
+          <Image 
+            src="/images/galleries-menux48.png"
+            alt="Galleries"
+            width={48}
+            height={48}
+            priority
+            className="mr-2"
+          />
+        </div>
+      </Link>
+      <Link
+        href="/about"
+        className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
+      >
+        <div className="flex items-center">
+          <Image 
+            src="/images/about-us-menux48.png"
+            alt="About Us"
+            width={48}
+            height={48}
+            priority
+            className="mr-2"
+          />
+        </div>
+      </Link>
+    </>
+  ), []);
 
   return (
     <header className="bg-white shadow-sm">
@@ -164,51 +222,7 @@ export default function Header() {
           
           {/* Desktop navigation */}
           <nav className="hidden md:ml-6 md:flex md:items-center md:space-x-8">
-            <Link
-              href="/"
-              className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
-            >
-              <div className="flex items-center">
-                <Image 
-                  src="/images/home-menux48.png"
-                  alt="Home"
-                  width={48}
-                  height={48}
-                  priority
-                  className="mr-2"
-                />
-              </div>
-            </Link>
-            <Link
-              href="/galleries"
-              className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
-            >
-              <div className="flex items-center">
-                <Image 
-                  src="/images/galleries-menux48.png"
-                  alt="Galleries"
-                  width={48}
-                  height={48}
-                  priority
-                  className="mr-2"
-                />
-              </div>
-            </Link>
-            <Link
-              href="/about"
-              className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
-            >
-              <div className="flex items-center">
-                <Image 
-                  src="/images/about-us-menux48.png"
-                  alt="About Us"
-                  width={48}
-                  height={48}
-                  priority
-                  className="mr-2"
-                />
-              </div>
-            </Link>
+            {navItems}
             
             {/* Auth buttons */}
             <div className="flex items-center ml-4">

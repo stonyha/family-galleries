@@ -17,9 +17,9 @@ export default function GalleryCard({ gallery }: GalleryCardProps) {
   const displayHeight = Math.round(320 * aspectRatio);
   
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-      <Link href={`/galleries/${slug}`} className="block">
-        <div className="relative h-64 bg-gray-200">
+    <Link href={`/galleries/${slug}`} className="block">
+      <div className="gallery-item rounded-lg overflow-hidden">
+        <div className="relative aspect-[4/3] bg-gray-200">
           {imageUrl && (
             <Image
               src={`https:${imageUrl}`}
@@ -28,34 +28,17 @@ export default function GalleryCard({ gallery }: GalleryCardProps) {
               height={displayHeight}
               className="w-full h-full object-cover"
               priority={false}
+              loading="lazy"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              quality={85}
             />
           )}
-        </div>
-        
-        <div className="p-4">
-          <h3 className="text-xl font-bold text-gray-800 mb-1">{title}</h3>
           
-          <div className="flex items-center text-sm text-gray-500 mb-2">
-            <span className="mr-2">
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                className="h-4 w-4 inline mr-1" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor"
-              >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" 
-                />
-              </svg>
-              {formatEventDate(eventDate)}
-            </span>
+          <div className="gallery-item-caption">
+            <h3 className="text-xl font-bold photo-title mb-1">{title}</h3>
             
-            {location && (
-              <span>
+            <div className="flex items-center justify-center text-sm text-gray-200 mb-2">
+              <span className="mr-3">
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
                   className="h-4 w-4 inline mr-1" 
@@ -67,25 +50,45 @@ export default function GalleryCard({ gallery }: GalleryCardProps) {
                     strokeLinecap="round" 
                     strokeLinejoin="round" 
                     strokeWidth={2} 
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" 
-                  />
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" 
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" 
                   />
                 </svg>
-                {location}
+                {formatEventDate(eventDate)}
               </span>
+              
+              {location && (
+                <span>
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    className="h-4 w-4 inline mr-1" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" 
+                    />
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" 
+                    />
+                  </svg>
+                  {location}
+                </span>
+              )}
+            </div>
+            
+            {description && (
+              <p className="text-gray-100 line-clamp-2 text-sm">{description}</p>
             )}
           </div>
-          
-          {description && (
-            <p className="text-gray-600 line-clamp-2 text-sm">{description}</p>
-          )}
         </div>
-      </Link>
-    </div>
+      </div>
+    </Link>
   );
 } 

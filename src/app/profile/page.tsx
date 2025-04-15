@@ -3,17 +3,7 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-
-type UserProfile = {
-  email?: string;
-  email_verified?: boolean;
-  name?: string;
-  nickname?: string;
-  picture?: string;
-  sub?: string;
-  updated_at?: string;
-  [key: string]: any;
-};
+import { UserProfile } from '@/types/auth';
 
 export default function ProfilePage() {
   const router = useRouter();
