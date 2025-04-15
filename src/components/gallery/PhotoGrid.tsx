@@ -16,6 +16,12 @@ interface ImagePosition {
   height: number;
 }
 
+// Interface for tracking touch positions
+interface TouchPosition {
+  x: number;
+  y: number;
+}
+
 export default function PhotoGrid({ images }: PhotoGridProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -25,10 +31,54 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
   const [loadedImages, setLoadedImages] = useState<Record<number, boolean>>({});
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [touchStart, setTouchStart] = useState<TouchPosition | null>(null);
+  const [touchEnd, setTouchEnd] = useState<TouchPosition | null>(null);
   const lightboxRef = useRef<HTMLDivElement>(null);
   const lightboxImageRef = useRef<HTMLDivElement>(null);
   const lightboxContentRef = useRef<HTMLImageElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+  
+  // Minimum swipe distance in pixels to trigger navigation
+  const MIN_SWIPE_DISTANCE = 50;
+  
+  // Handle touch start event
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart({
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY
+    });
+  };
+  
+  // Handle touch move event
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd({
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY
+    });
+  };
+  
+  // Handle touch end event
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distanceX = touchStart.x - touchEnd.x;
+    const distanceY = touchStart.y - touchEnd.y;
+    const isHorizontalSwipe = Math.abs(distanceX) > Math.abs(distanceY);
+    
+    if (isHorizontalSwipe && Math.abs(distanceX) > MIN_SWIPE_DISTANCE) {
+      if (distanceX > 0) {
+        // Swiped left, go to next image
+        goToNext();
+      } else {
+        // Swiped right, go to previous image
+        goToPrevious();
+      }
+    }
+    
+    // Reset touch positions
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
   
   useEffect(() => {
     // Reset images loaded count when images array changes
@@ -309,6 +359,9 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
           className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center lightbox-overlay"
           onClick={closeLightbox}
           onKeyDown={handleKeyDown}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
           tabIndex={0}
           style={{ 
             willChange: 'opacity',
@@ -340,7 +393,9 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
           </button>
           
           <button
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white p-2 lightbox-controls"
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white p-2 lightbox-controls 
+            bg-black bg-opacity-50 rounded-full z-10 w-10 h-10 flex items-center justify-center
+            md:w-12 md:h-12 hover:bg-opacity-70 transition-all"
             onClick={(e) => {
               e.stopPropagation();
               goToPrevious();
@@ -365,7 +420,9 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
           </button>
           
           <button
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white p-2 lightbox-controls"
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white p-2 lightbox-controls
+            bg-black bg-opacity-50 rounded-full z-10 w-10 h-10 flex items-center justify-center
+            md:w-12 md:h-12 hover:bg-opacity-70 transition-all"
             onClick={(e) => {
               e.stopPropagation();
               goToNext();
