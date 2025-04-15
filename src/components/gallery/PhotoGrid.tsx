@@ -329,12 +329,6 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
                       quality={85}
                       onLoad={() => handleImageLoad(index)}
                     />
-                    
-                    {image?.fields?.title && (
-                      <div className="gallery-item-caption">
-                        <span className="photo-title">{image.fields.title}</span>
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
@@ -395,7 +389,7 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
           <button
             className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white p-2 lightbox-controls 
             bg-black bg-opacity-50 rounded-full z-10 w-10 h-10 flex items-center justify-center
-            md:w-12 md:h-12 hover:bg-opacity-70 transition-all"
+            md:w-12 md:h-12 hover:bg-opacity-70 transition-all hidden md:flex"
             onClick={(e) => {
               e.stopPropagation();
               goToPrevious();
@@ -422,7 +416,7 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
           <button
             className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white p-2 lightbox-controls
             bg-black bg-opacity-50 rounded-full z-10 w-10 h-10 flex items-center justify-center
-            md:w-12 md:h-12 hover:bg-opacity-70 transition-all"
+            md:w-12 md:h-12 hover:bg-opacity-70 transition-all hidden md:flex"
             onClick={(e) => {
               e.stopPropagation();
               goToNext();
@@ -448,7 +442,7 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
           
           <div 
             ref={lightboxImageRef}
-            className="max-h-[90vh] max-w-[90vw] relative lightbox-content"
+            className="max-h-[90vh] max-w-[90vw] w-full md:w-auto relative lightbox-content"
             onClick={(e) => e.stopPropagation()}
             style={{ 
               willChange: 'transform, opacity',
@@ -465,7 +459,7 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
                 alt={imageAlt}
                 width={1200}
                 height={800}
-                className="max-h-[90vh] object-contain"
+                className="max-h-[90vh] w-full md:w-auto object-contain"
                 priority={true}
                 quality={90}
                 style={{ 
@@ -475,12 +469,6 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
                 }}
               />
             )}
-            
-            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-75 backdrop-blur-sm text-white p-3 text-center caption">
-              <span className="font-medium">
-                {imageTitle}
-              </span>
-            </div>
           </div>
         </div>
       )}
