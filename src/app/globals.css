@@ -372,47 +372,67 @@ body {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Feature carousel styles */
+/* Updated Carousel CSS for larger size */
 .feature-carousel {
   width: 100%;
   position: relative;
   overflow: hidden;
+  height: auto;
 }
 
 .carousel-container {
   width: 100%;
   position: relative;
-  z-index: 1;
-  border-radius: 0;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
 }
 
 .carousel-items {
   width: 100%;
   position: relative;
+  height: 100vh;
+  /* Set a fixed height for the container to prevent layout shifts */
   min-height: 700px;
 }
 
 .carousel-item {
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  visibility: hidden;
+  display: block;
   position: absolute;
-  inset: 0;
-  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  left: 0;
+  top: 0;
   z-index: 0;
+  transform: translateZ(0); /* Hardware acceleration to prevent flickering */
+  opacity: 0;
+  transition: opacity 1s ease;
+  will-change: opacity; /* Hint for browser optimization */
+  backface-visibility: hidden; /* Prevent flickering on some browsers */
+  -webkit-backface-visibility: hidden;
 }
 
 .carousel-item[aria-hidden="false"] {
-  opacity: 1;
-  visibility: visible;
   z-index: 1;
-  animation: fadeInScale 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 1;
+  transition: opacity 1s ease;
 }
 
-.carousel-item .absolute.inset-0 {
-  overflow: hidden;
+/* Additional mobile fixes */
+@media (max-width: 767px) {
+  .carousel-items {
+    height: auto;
+    min-height: 700px;
+  }
+  
+  /* Disable absolute positioning on mobile to fix layout issues */
+  .carousel-item {
+    position: absolute;
+    height: 100%;
+  }
+  
+  /* Improve transition speed on mobile */
+  .carousel-item, 
+  .carousel-item[aria-hidden="false"] {
+    transition: opacity 0.5s ease;
+  }
 }
 
 .carousel-item img {
