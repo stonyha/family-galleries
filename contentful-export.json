@@ -287,6 +287,102 @@
           "localized": false
         }
       ]
+    },
+    {
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "2f6a6fx5gcj9"
+          }
+        },
+        "id": "featureCarouselItem",
+        "type": "ContentType",
+        "createdAt": "2025-04-15T10:30:42.429Z",
+        "updatedAt": "2025-04-15T10:30:42.429Z",
+        "environment": {
+          "sys": {
+            "id": "master",
+            "type": "Link",
+            "linkType": "Environment"
+          }
+        },
+        "publishedVersion": 1,
+        "publishedAt": "2025-04-15T10:30:42.429Z",
+        "firstPublishedAt": "2025-04-15T10:30:42.429Z",
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0"
+          }
+        },
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0"
+          }
+        },
+        "publishedCounter": 1,
+        "version": 1,
+        "publishedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0"
+          }
+        }
+      },
+      "displayField": "heading",
+      "name": "Feature Carousel Item",
+      "description": "An item for the feature carousel/slider",
+      "fields": [
+        {
+          "id": "heading",
+          "name": "Heading",
+          "type": "Symbol",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "summary",
+          "name": "Summary",
+          "type": "Text",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "ctaLabel",
+          "name": "CTA Label",
+          "type": "Symbol",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "ctaLink",
+          "name": "CTA Link",
+          "type": "Symbol",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "image",
+          "name": "Image",
+          "type": "Link",
+          "linkType": "Asset",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "order",
+          "name": "Order",
+          "type": "Integer",
+          "required": true,
+          "localized": false
+        }
+      ]
     }
   ],
   "editorInterfaces": [
@@ -411,6 +507,51 @@
         "contentType": {
           "sys": {
             "id": "aboutPage",
+            "type": "Link",
+            "linkType": "ContentType"
+          }
+        },
+        "environment": {
+          "sys": {
+            "id": "master",
+            "type": "Link",
+            "linkType": "Environment"
+          }
+        }
+      },
+      "controls": []
+    },
+    {
+      "sys": {
+        "id": "default",
+        "type": "EditorInterface",
+        "space": {
+          "sys": {
+            "id": "2f6a6fx5gcj9",
+            "type": "Link",
+            "linkType": "Space"
+          }
+        },
+        "version": 1,
+        "createdAt": "2025-04-15T10:30:42.429Z",
+        "createdBy": {
+          "sys": {
+            "id": "0",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "updatedAt": "2025-04-15T10:30:42.429Z",
+        "updatedBy": {
+          "sys": {
+            "id": "0",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "contentType": {
+          "sys": {
+            "id": "featureCarouselItem",
             "type": "Link",
             "linkType": "ContentType"
           }
