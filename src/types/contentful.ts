@@ -25,10 +25,20 @@ export interface AboutPageFields {
   familyImage?: Asset;
 }
 
+export interface FeatureCarouselItemFields {
+  heading: string;
+  summary: string;
+  ctaLabel: string;
+  ctaLink: string;
+  image: Asset;
+  order: number;
+}
+
 // Use type assertion when working with the actual Contentful API
 export type Gallery = any; // We'll use type assertion when needed
 export type HomePage = any;
 export type AboutPage = any;
+export type FeatureCarouselItem = any;
 
 export interface GalleryCollection {
   items: any[]; // Will be cast to the right types when used
