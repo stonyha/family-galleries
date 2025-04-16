@@ -94,12 +94,13 @@ export default function FeatureCarouselItem({
 
   return (
     <div 
-      className={`carousel-item w-full relative h-[700px] md:h-[800px] lg:h-[900px] xl:h-screen`}
+      className={`carousel-item w-full relative h-[700px] md:h-[800px] lg:h-[900px] xl:h-screen ${isActive ? 'opacity-100' : 'opacity-0'} transition-opacity duration-700`}
       aria-hidden={ariaHidden}
+      style={{ position: 'absolute', left: 0, top: 0, width: '100%' }}
     >
       {/* Mobile Layout - Stack Content Below Image */}
       <div className="md:hidden flex flex-col h-full">
-        {/* Background Image */}
+        {/* Background Image - No overlay for mobile */}
         <div className="relative w-full h-[400px]">
           <Image
             src={image}
@@ -110,14 +111,14 @@ export default function FeatureCarouselItem({
             priority={true}
             quality={90}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/20" />
+          {/* Removed gradient overlay for mobile */}
         </div>
         
         {/* Content section - Full width for mobile */}
         <div className="flex-1 w-full px-4 py-8 bg-gray-900">
           <div className="carousel-content w-full">
-            <h2 className="text-4xl font-bold text-white mb-6 drop-shadow-lg">{heading}</h2>
-            <p className="text-lg text-white/90 mb-8 drop-shadow-md leading-relaxed">{summary}</p>
+            <h2 className="text-4xl font-bold text-white mb-6">{heading}</h2>
+            <p className="text-lg text-white/90 mb-8 leading-relaxed">{summary}</p>
             {renderCTAButton()}
           </div>
         </div>
