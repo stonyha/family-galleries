@@ -74,6 +74,16 @@
           },
           "required": false,
           "localized": false
+        },
+        {
+          "id": "thumbnail",
+          "name": "Thumbnail",
+          "type": "Object",
+          "localized": false,
+          "required": false,
+          "validations": [],
+          "disabled": false,
+          "omitted": false
         }
       ]
     },
