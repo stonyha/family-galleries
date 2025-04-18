@@ -2,6 +2,7 @@ import HeroSection from '@/components/home/HeroSection';
 import GalleryGrid from '@/components/gallery/GalleryGrid';
 import FeatureCarousel from '@/components/carousel/FeatureCarousel';
 import Layout from '@/components/layout/Layout';
+import QuickUploadButton from '@/components/home/QuickUploadButton';
 import { getHomePage, getFeaturedGalleries, getFeatureCarouselItems } from '@/lib/contentful';
 import { Metadata } from 'next';
 
@@ -58,7 +59,10 @@ export default async function HomePage() {
         title={title}
         intro={intro}
         imageUrl={heroImage}
-      />          
+      />
+      
+      {/* Quick Upload Button */}
+      <QuickUploadButton />          
     </Layout>
   );
 }
