@@ -7,12 +7,32 @@ type GalleryCardProps = {
 };
 
 export default function GalleryCard({ gallery }: GalleryCardProps) {
-  const { title, slug, description, eventDate, coverImage, location } = gallery.fields;
+  const { title, slug, description, eventDate, thumbnail, coverImage, location } = gallery.fields;
   
-  const imageUrl = coverImage?.fields?.file?.url || '';
-  const imageAlt = coverImage?.fields?.title || title;
-  const imageWidth = coverImage?.fields?.file?.details?.image?.width || 800;
-  const imageHeight = coverImage?.fields?.file?.details?.image?.height || 600;
+  // Remove debug logging in production
+  // console.log('Thumbnail structure:', JSON.stringify(thumbnail, null, 2));
+  
+  let imageUrl = '';
+  let imageAlt = title;
+  let imageWidth = 800;
+  let imageHeight = 600;
+  
+  // Handle the Cloudinary thumbnail data (which is an array)
+  if (thumbnail && Array.isArray(thumbnail) && thumbnail.length > 0) {
+    const cloudinaryImage = thumbnail[0];
+    // Use secure_url for HTTPS
+    imageUrl = cloudinaryImage.secure_url;
+    imageWidth = cloudinaryImage.width;
+    imageHeight = cloudinaryImage.height;
+    // No need to add https: prefix since secure_url already includes it
+  } else if (coverImage?.fields) {
+    // Fall back to Contentful coverImage if thumbnail not available
+    imageUrl = `https:${coverImage.fields.file?.url || ''}`;
+    imageAlt = coverImage.fields.title || title;
+    imageWidth = coverImage.fields.file?.details?.image?.width || 800;
+    imageHeight = coverImage.fields.file?.details?.image?.height || 600;
+  }
+  
   const aspectRatio = imageHeight / imageWidth;
   const displayHeight = Math.round(320 * aspectRatio);
   
@@ -22,7 +42,7 @@ export default function GalleryCard({ gallery }: GalleryCardProps) {
         <div className="relative aspect-[4/3] bg-gray-200">
           {imageUrl && (
             <Image
-              src={`https:${imageUrl}`}
+              src={imageUrl}
               alt={imageAlt}
               width={640}
               height={displayHeight}

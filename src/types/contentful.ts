@@ -7,6 +7,7 @@ export interface GalleryFields {
   description?: string;
   eventDate: string;
   coverImage: Asset;
+  thumbnail: Asset;
   images: Asset[];
   location?: string;
   tags?: string[];
