@@ -12,9 +12,9 @@ export default function QuickUploadButton({ className = '' }: QuickUploadButtonP
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [title, setTitle] = useState('');
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const [titles, setTitles] = useState<string[]>([]);
   const [galleries, setGalleries] = useState<any[]>([]);
   const [selectedGallery, setSelectedGallery] = useState<string>('');
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -29,6 +29,9 @@ export default function QuickUploadButton({ className = '' }: QuickUploadButtonP
     setIsModalOpen(true);
     setUploadError(null);
     setUploadSuccess(false);
+    setSelectedFiles([]);
+    setPreviews([]);
+    setTitles([]);
     
     try {
       const response = await fetch('/api/galleries');
@@ -48,30 +51,54 @@ export default function QuickUploadButton({ className = '' }: QuickUploadButtonP
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    if (!e.target.files || e.target.files.length === 0) return;
     
-    handleFile(file);
+    const newFiles = Array.from(e.target.files);
+    handleAddFiles(newFiles);
   };
 
-  const handleFile = (file: File) => {
-    if (!file.type.startsWith('image/')) {
-      setUploadError('Please select an image file (JPEG, PNG, GIF, etc.)');
+  const handleAddFiles = (files: File[]) => {
+    // Filter for only image files
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    
+    if (imageFiles.length === 0) {
+      setUploadError('Please select image files (JPEG, PNG, GIF, etc.)');
       return;
     }
     
-    setSelectedFile(file);
-    setTitle(file.name.split('.')[0]); // Set default title from filename
+    // Create preview URLs
+    const newPreviews = imageFiles.map(file => URL.createObjectURL(file));
     
-    // Create a preview URL
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreviewUrl(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+    // Create default titles from filenames
+    const newTitles = imageFiles.map(file => file.name.split('.')[0]);
+    
+    setSelectedFiles(prev => [...prev, ...imageFiles]);
+    setPreviews(prev => [...prev, ...newPreviews]);
+    setTitles(prev => [...prev, ...newTitles]);
     
     // Clear any previous errors
     setUploadError(null);
+    
+    // Reset the file input to allow selecting the same files again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const removeFile = (index: number) => {
+    // Clean up preview URL
+    URL.revokeObjectURL(previews[index]);
+    
+    // Remove file, preview, and title
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    setPreviews(prev => prev.filter((_, i) => i !== index));
+    setTitles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const updateTitle = (index: number, newTitle: string) => {
+    const newTitles = [...titles];
+    newTitles[index] = newTitle;
+    setTitles(newTitles);
   };
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -89,15 +116,15 @@ export default function QuickUploadButton({ className = '' }: QuickUploadButtonP
     setIsDragging(false);
     
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFile(e.dataTransfer.files[0]);
+      handleAddFiles(Array.from(e.dataTransfer.files));
     }
   };
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!selectedFile) {
-      setUploadError('Please select a file to upload');
+    if (selectedFiles.length === 0) {
+      setUploadError('Chọn ít nhất 1 file để tải lên');
       return;
     }
     
@@ -107,8 +134,16 @@ export default function QuickUploadButton({ className = '' }: QuickUploadButtonP
     
     try {
       const formData = new FormData();
-      formData.append('file', selectedFile);
-      formData.append('title', title);
+      
+      // Add each file to form data
+      selectedFiles.forEach((file, index) => {
+        formData.append(`files[${index}]`, file);
+        if (titles[index]) {
+          formData.append(`titles[${index}]`, titles[index]);
+        }
+      });
+      
+      // Add gallery ID if selected
       if (selectedGallery) {
         formData.append('galleryId', selectedGallery);
       }
@@ -188,10 +223,10 @@ export default function QuickUploadButton({ className = '' }: QuickUploadButtonP
       {/* Upload Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-lg w-full overflow-hidden shadow-xl">
+          <div className="bg-white rounded-lg max-w-2xl w-full overflow-hidden shadow-xl">
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-semibold text-gray-900">Quick Upload</h3>
+                <h3 className="text-xl font-semibold text-gray-900">Tải lên hình ảnh</h3>
                 <button
                   onClick={() => setIsModalOpen(false)}
                   className="text-gray-500 hover:text-gray-700"
@@ -231,7 +266,7 @@ export default function QuickUploadButton({ className = '' }: QuickUploadButtonP
                       />
                     </svg>
                   </div>
-                  <p className="text-lg font-semibold text-green-600">Upload successful!</p>
+                  <p className="text-lg font-semibold text-green-600">Tải lên thành công!</p>
                 </div>
               ) : (
                 <form onSubmit={handleUpload}>
@@ -247,46 +282,9 @@ export default function QuickUploadButton({ className = '' }: QuickUploadButtonP
                           : 'border-gray-300 hover:border-amber-500'
                       }`}
                     >
-                      {previewUrl ? (
-                        <div className="relative aspect-video mx-auto">
-                          <Image
-                            src={previewUrl}
-                            alt="Preview"
-                            fill
-                            className="object-contain"
-                          />
-                        </div>
-                      ) : (
-                        <>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-12 w-12 mx-auto text-gray-400 mb-2"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                            />
-                          </svg>
-                          <p className="text-gray-600">Click to select a photo or drag and drop</p>
-                          <p className="text-xs text-gray-400 mt-1">
-                            Supported formats: JPEG, PNG, GIF, WebP
-                          </p>
-                        </>
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleFileClick}
-                      className="mt-2 w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 flex items-center justify-center"
-                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5 mr-2"
+                        className="h-12 w-12 mx-auto text-gray-400 mb-2"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -298,27 +296,56 @@ export default function QuickUploadButton({ className = '' }: QuickUploadButtonP
                           d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                         />
                       </svg>
-                      Browse for Images
-                    </button>
+                      <p className="text-gray-600">Click để chọn hình ảnh hoặc kéo và thả</p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Chọn nhiều file với Ctrl/Cmd
+                      </p>
+                    </div>
                     <input
                       ref={fileInputRef}
                       type="file"
                       className="hidden"
                       onChange={handleFileChange}
                       accept="image/*"
+                      multiple
                     />
                   </div>
 
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                    <input
-                      type="text"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-amber-500 focus:border-amber-500"
-                      placeholder="Enter a title for your photo"
-                    />
-                  </div>
+                  {selectedFiles.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">
+                        Selected Images ({selectedFiles.length})
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto p-1">
+                        {selectedFiles.map((file, index) => (
+                          <div key={index} className="border rounded p-2">
+                            <div className="relative aspect-square mb-2">
+                              <Image
+                                src={previews[index]}
+                                alt={`Preview ${index}`}
+                                fill
+                                className="object-cover rounded"
+                              />
+                            </div>
+                            <input
+                              type="text"
+                              value={titles[index] || ''}
+                              onChange={(e) => updateTitle(index, e.target.value)}
+                              className="w-full text-sm p-1 border rounded mb-1"
+                              placeholder="Title"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeFile(index)}
+                              className="text-xs text-red-600 hover:text-red-800"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {galleries.length > 0 && (
                     <div className="mb-4">
@@ -372,9 +399,9 @@ export default function QuickUploadButton({ className = '' }: QuickUploadButtonP
                     <button
                       type="submit"
                       className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
-                      disabled={isUploading || !selectedFile}
+                      disabled={isUploading || selectedFiles.length === 0}
                     >
-                      Upload
+                      Upload {selectedFiles.length > 0 ? `(${selectedFiles.length})` : ''}
                     </button>
                   </div>
                 </form>
