@@ -389,9 +389,9 @@ body {
 .carousel-items {
   width: 100%;
   position: relative;
-  height: 100vh;
+  height: 75vh;
   /* Set a fixed height for the container to prevent layout shifts */
-  min-height: 700px;
+  min-height: 525px;
 }
 
 .carousel-item {
@@ -419,7 +419,7 @@ body {
 @media (max-width: 767px) {
   .carousel-items {
     height: auto;
-    min-height: 700px;
+    min-height: 525px;
   }
   
   /* Disable absolute positioning on mobile to fix layout issues */

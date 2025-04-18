@@ -94,14 +94,14 @@ export default function FeatureCarouselItem({
 
   return (
     <div 
-      className={`carousel-item w-full relative h-[700px] md:h-[800px] lg:h-[900px] xl:h-screen ${isActive ? 'opacity-100' : 'opacity-0'} transition-opacity duration-700`}
+      className={`carousel-item w-full relative h-[525px] md:h-[600px] lg:h-[675px] xl:h-[75vh] ${isActive ? 'opacity-100' : 'opacity-0'} transition-opacity duration-700`}
       aria-hidden={ariaHidden}
       style={{ position: 'absolute', left: 0, top: 0, width: '100%' }}
     >
       {/* Mobile Layout - Stack Content Below Image */}
       <div className="md:hidden flex flex-col h-full">
         {/* Background Image - No overlay for mobile */}
-        <div className="relative w-full h-[400px]">
+        <div className="relative w-full h-[300px]">
           <Image
             src={image}
             alt={altText}
@@ -135,7 +135,7 @@ export default function FeatureCarouselItem({
           priority={true}
           quality={90}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40" />
+        <div className="absolute inset-0 from-black/70 to-black/40" />
         
         {/* Content overlay for desktop */}
         <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 h-full flex flex-col justify-center">
