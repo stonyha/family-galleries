@@ -77,48 +77,10 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
   // Handle touch start event
   const handleTouchStart = (e: TouchEvent) => {
     if (e.touches && e.touches.length > 0) {
-      // Single touch
-      if (e.touches.length === 1) {
-        setTouchStart({
-          x: e.touches[0].clientX,
-          y: e.touches[0].clientY
-        });
-        
-        // Check for double tap
-        const currentTime = new Date().getTime();
-        const tapLength = currentTime - lastTapTime;
-        
-        if (tapLength < DOUBLE_TAP_THRESHOLD && tapLength > 0) {
-          // Double tap detected
-          if (isZoomed) {
-            // Reset zoom
-            setZoomState({ scale: 1, translateX: 0, translateY: 0 });
-            setIsZoomed(false);
-          } else {
-            // Zoom in at tap position
-            const rect = lightboxContentRef.current?.getBoundingClientRect();
-            if (rect) {
-              const tapX = e.touches[0].clientX - rect.left;
-              const tapY = e.touches[0].clientY - rect.top;
-              
-              // Calculate the point to zoom into (center of the tap)
-              const translateX = (rect.width / 2 - tapX) * 2;
-              const translateY = (rect.height / 2 - tapY) * 2;
-              
-              setZoomState({ scale: 2, translateX, translateY });
-              setIsZoomed(true);
-            }
-          }
-        }
-        
-        setLastTapTime(currentTime);
-      } 
-      // Multi-touch (pinch)
-      else if (e.touches.length === 2) {
-        const distance = getTouchDistance(e.touches[0], e.touches[1]);
-        setInitialTouchDistance(distance);
-        setInitialScale(zoomState.scale);
-      }
+      setTouchStart({
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY
+      });
     }
   };
   
@@ -126,93 +88,41 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
   const handleTouchMove = (e: TouchEvent) => {
     if (!touchStart || !e.touches || e.touches.length === 0) return;
     
-    // Single touch - handle panning when zoomed
-    if (e.touches.length === 1 && isZoomed) {
-      setTouchEnd({
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY
-      });
-      
-      // Calculate the movement delta
-      const deltaX = e.touches[0].clientX - touchStart.x;
-      const deltaY = e.touches[0].clientY - touchStart.y;
-      
-      // Update the translation
-      setZoomState(prev => ({
-        ...prev,
-        translateX: prev.translateX + deltaX,
-        translateY: prev.translateY + deltaY
-      }));
-      
-      // Update touch start for next move event
-      setTouchStart({
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY
-      });
-      
-      // Prevent default to avoid scrolling while panning
-      e.preventDefault();
-    } 
-    // Multi-touch - handle pinch zoom
-    else if (e.touches.length === 2 && initialTouchDistance !== null) {
-      const currentDistance = getTouchDistance(e.touches[0], e.touches[1]);
-      const scaleFactor = currentDistance / initialTouchDistance;
-      
-      // Calculate new scale with limits
-      const newScale = Math.min(Math.max(initialScale * scaleFactor, 1), MAX_ZOOM_SCALE);
-      
-      // Get the midpoint of the current touch points
-      const midpoint = getTouchMidpoint(e.touches[0], e.touches[1]);
-      
-      // Calculate the translation to keep the zoom centered on the pinch point
-      const rect = lightboxContentRef.current?.getBoundingClientRect();
-      if (rect) {
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        
-        // Calculate the point to zoom into (center of the pinch)
-        const translateX = (centerX - midpoint.x) * (newScale - 1);
-        const translateY = (centerY - midpoint.y) * (newScale - 1);
-        
-        setZoomState({ scale: newScale, translateX, translateY });
-        setIsZoomed(newScale > 1);
-      }
-      
-      // Prevent default to avoid scrolling while pinching
-      e.preventDefault();
-    }
+    setTouchEnd({
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY
+    });
+    
+    // Prevent default to avoid scrolling while swiping in the lightbox
+    e.preventDefault();
   };
   
   // Handle touch end event
   const handleTouchEnd = (e: TouchEvent) => {
     if (!touchStart || !touchEnd) return;
     
-    // Only handle swipe gestures if not zoomed
-    if (!isZoomed) {
-      const distanceX = touchStart.x - touchEnd.x;
-      const distanceY = touchStart.y - touchEnd.y;
-      const isHorizontalSwipe = Math.abs(distanceX) > Math.abs(distanceY);
-      
-      if (isHorizontalSwipe && Math.abs(distanceX) > MIN_SWIPE_DISTANCE) {
-        if (distanceX > 0) {
-          // Swiped left, go to next image
-          goToNext();
-        } else {
-          // Swiped right, go to previous image
-          goToPrevious();
-        }
-      } else if (!isHorizontalSwipe && distanceY < -MIN_SWIPE_DISTANCE) {
-        // Swiped down, close the lightbox
-        // We use a negative value since distanceY is calculated as touchStart.y - touchEnd.y
-        // So a downward swipe gives a negative value
-        closeLightbox();
+    const distanceX = touchStart.x - touchEnd.x;
+    const distanceY = touchStart.y - touchEnd.y;
+    const isHorizontalSwipe = Math.abs(distanceX) > Math.abs(distanceY);
+    
+    if (isHorizontalSwipe && Math.abs(distanceX) > MIN_SWIPE_DISTANCE) {
+      if (distanceX > 0) {
+        // Swiped left, go to next image
+        goToNext();
+      } else {
+        // Swiped right, go to previous image
+        goToPrevious();
       }
+    } else if (!isHorizontalSwipe && distanceY < -MIN_SWIPE_DISTANCE) {
+      // Swiped down, close the lightbox
+      // We use a negative value since distanceY is calculated as touchStart.y - touchEnd.y
+      // So a downward swipe gives a negative value
+      closeLightbox();
     }
     
     // Reset touch positions
     setTouchStart(null);
     setTouchEnd(null);
-    setInitialTouchDistance(null);
   };
   
   useEffect(() => {
@@ -291,7 +201,6 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
           if (lightboxContentRef.current) {
             lightboxContentRef.current.classList.remove(animationClass);
           }
-          setIsTransitioning(false);
           setNextImageIndex(null);
         }, 400);
         
@@ -383,22 +292,16 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
     // Calculate the next image index
     const prevIndex = currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
     
-    // Add fade-out animation
-    if (lightboxContentRef.current) {
-      lightboxContentRef.current.classList.add('fade-out');
-    }
+    // Set the current image to the previous one immediately
+    setCurrentImageIndex(prevIndex);
     
-    // Wait for fade-out to complete before changing the image
+    // Signal that we're ready to show the new image with animation
+    setNextImageIndex(prevIndex);
+    
+    // Reset transition state after animation completes
     setTimeout(() => {
-      // Set the current image to the previous one
-      setCurrentImageIndex(prevIndex);
-      // Clear the fade-out class
-      if (lightboxContentRef.current) {
-        lightboxContentRef.current.classList.remove('fade-out');
-      }
-      // Signal that we're ready to show the new image with animation
-      setNextImageIndex(prevIndex);
-    }, 200);
+      setIsTransitioning(false);
+    }, 400);
   };
   
   const goToNext = () => {
@@ -410,22 +313,16 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
     // Calculate the next image index
     const nextIndex = currentImageIndex === images.length - 1 ? 0 : currentImageIndex + 1;
     
-    // Add fade-out animation
-    if (lightboxContentRef.current) {
-      lightboxContentRef.current.classList.add('fade-out');
-    }
+    // Set the current image to the next one immediately
+    setCurrentImageIndex(nextIndex);
     
-    // Wait for fade-out to complete before changing the image
+    // Signal that we're ready to show the new image with animation
+    setNextImageIndex(nextIndex);
+    
+    // Reset transition state after animation completes
     setTimeout(() => {
-      // Set the current image to the next one
-      setCurrentImageIndex(nextIndex);
-      // Clear the fade-out class
-      if (lightboxContentRef.current) {
-        lightboxContentRef.current.classList.remove('fade-out');
-      }
-      // Signal that we're ready to show the new image with animation
-      setNextImageIndex(nextIndex);
-    }, 200);
+      setIsTransitioning(false);
+    }, 400);
   };
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -466,19 +363,12 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
     if (typeof window !== 'undefined') {
       const updateArrowVisibility = () => {
         const buttons = document.querySelectorAll('.lightbox-controls');
-        if (window.innerWidth >= 768) { // md breakpoint
-          buttons.forEach(btn => {
-            if (btn instanceof HTMLElement) {
-              btn.style.display = 'flex';
-            }
-          });
-        } else {
-          buttons.forEach(btn => {
-            if (btn instanceof HTMLElement) {
-              btn.style.display = 'none';
-            }
-          });
-        }
+        // Show arrows on all devices
+        buttons.forEach(btn => {
+          if (btn instanceof HTMLElement) {
+            btn.style.display = 'flex';
+          }
+        });
       };
       
       // Initial update
@@ -592,7 +482,6 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
             className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white p-2 lightbox-controls 
             bg-black bg-opacity-50 rounded-full z-10 w-10 h-10 items-center justify-center
             md:w-12 md:h-12 hover:bg-opacity-70 transition-all"
-            style={{ display: 'none' }}
             onClick={(e) => {
               e.stopPropagation();
               goToPrevious();
@@ -620,7 +509,6 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
             className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white p-2 lightbox-controls
             bg-black bg-opacity-50 rounded-full z-10 w-10 h-10 items-center justify-center
             md:w-12 md:h-12 hover:bg-opacity-70 transition-all"
-            style={{ display: 'none' }}
             onClick={(e) => {
               e.stopPropagation();
               goToNext();
@@ -674,6 +562,33 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
                 onTransformed={(e, state) => {
                   // Handle transformed event if needed
                 }}
+                onPanning={(ref, event) => {
+                  // Get the current transform state from the ref
+                  const state = ref.state;
+                  
+                  // If the image is not zoomed (scale is 1 or very close to 1)
+                  // and the pan is mostly horizontal, we'll handle navigation
+                  if (state.scale <= 1.05 && Math.abs(state.positionX) > 50) {
+                    // If we've panned far enough horizontally, trigger navigation
+                    if (state.positionX > 100) {
+                      goToPrevious();
+                      // Reset the transform after navigation
+                      setTimeout(() => {
+                        if (transformComponentRef.current) {
+                          transformComponentRef.current.resetTransform();
+                        }
+                      }, 100);
+                    } else if (state.positionX < -100) {
+                      goToNext();
+                      // Reset the transform after navigation
+                      setTimeout(() => {
+                        if (transformComponentRef.current) {
+                          transformComponentRef.current.resetTransform();
+                        }
+                      }, 100);
+                    }
+                  }
+                }}
               >
                 {({ zoomIn, zoomOut, resetTransform }) => (
                   <TransformComponent
@@ -696,7 +611,7 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
                         style={{ 
                           willChange: 'transform',
                           backfaceVisibility: 'hidden',
-                          transition: isTransitioning ? 'none' : 'transform 0.1s ease-out',
+                          transition: isTransitioning ? 'none' : 'transform 0.3s ease-out',
                           touchAction: 'none', // Prevent browser handling of touch events
                           margin: '0 auto',
                           display: 'block'

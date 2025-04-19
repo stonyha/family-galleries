@@ -173,42 +173,49 @@ const FeatureCarousel: React.FC<FeatureCarouselProps> = ({
         aria-atomic="true"
       ></div>
       
-      <div className="carousel-container">
+      <div className="carousel-container relative">
         <div className="carousel-items">
           {items.map((item, index) => (
-            <FeatureCarouselItem
-              key={item.id}
-              item={item}
-              isActive={index === activeIndex}
+            <div 
+              key={item.id} 
+              className={`carousel-item-wrapper absolute w-full h-full transition-opacity duration-500 ease-in-out ${
+                index === activeIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
+              }`}
               aria-hidden={index !== activeIndex}
-            />
+            >
+              <FeatureCarouselItem
+                item={item}
+                isActive={index === activeIndex}
+                aria-hidden={index !== activeIndex}
+              />
+            </div>
           ))}
         </div>
         
         {/* Navigation buttons */}
         <button
-          className="carousel-nav-btn absolute left-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white"
+          className="carousel-nav-btn absolute left-4 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white"
           onClick={prevSlide}
           aria-label="Previous slide"
         >
-          <ChevronLeftIcon className="h-6 w-6" />
+          <ChevronLeftIcon className="h-8 w-8" />
         </button>
         
         <button
-          className="carousel-nav-btn absolute right-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white"
+          className="carousel-nav-btn absolute right-4 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white"
           onClick={nextSlide}
           aria-label="Next slide"
         >
-          <ChevronRightIcon className="h-6 w-6" />
+          <ChevronRightIcon className="h-8 w-8" />
         </button>
       </div>
       
       {/* Slide indicators */}
-      <div className="carousel-indicators absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
+      <div className="carousel-indicators absolute bottom-8 left-0 right-0 flex justify-center space-x-3 z-20">
         {items.map((_, index) => (
           <button
             key={index}
-            className="h-3 w-3 rounded-full bg-white/50"
+            className={`h-3 w-3 rounded-full ${index === activeIndex ? 'bg-amber-500' : 'bg-white/50'}`}
             onClick={() => goToSlide(index)}
             aria-label={`Go to slide ${index + 1}`}
             aria-selected={index === activeIndex}

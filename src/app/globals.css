@@ -372,76 +372,99 @@ body {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Updated Carousel CSS for larger size */
+/* Updated Carousel CSS for full-screen design */
 .feature-carousel {
   width: 100%;
   position: relative;
   overflow: hidden;
-  height: auto;
+  height: 50vh; /* Reduced height on mobile */
+  max-height: 50vh;
+}
+
+/* Media query for larger screens */
+@media (min-width: 768px) {
+  .feature-carousel {
+    height: 70vh; /* Slightly taller on larger screens */
+    max-height: 70vh;
+  }
 }
 
 .carousel-container {
   width: 100%;
+  height: 100%;
   position: relative;
   overflow: hidden;
 }
 
 .carousel-items {
   width: 100%;
+  height: 100%;
   position: relative;
-  height: 75vh;
-  /* Set a fixed height for the container to prevent layout shifts */
-  min-height: 525px;
+}
+
+.carousel-item-wrapper {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 0.8s ease-in-out;
 }
 
 .carousel-item {
-  display: block;
-  position: absolute;
   width: 100%;
-  left: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* For the CTA button in carousel */
+.carousel-item a {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-item a:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background-color: #d97706; /* amber-600 darker */
+}
+
+.carousel-item a:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-item a::before {
+  content: '';
+  position: absolute;
   top: 0;
-  z-index: 0;
-  transform: translateZ(0); /* Hardware acceleration to prevent flickering */
-  opacity: 0;
-  transition: opacity 1s ease;
-  will-change: opacity; /* Hint for browser optimization */
-  backface-visibility: hidden; /* Prevent flickering on some browsers */
-  -webkit-backface-visibility: hidden;
-}
-
-.carousel-item[aria-hidden="false"] {
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: 0.8s;
   z-index: 1;
-  opacity: 1;
-  transition: opacity 1s ease;
 }
 
-/* Additional mobile fixes */
-@media (max-width: 767px) {
-  .carousel-items {
-    height: auto;
-    min-height: 525px;
-  }
-  
-  /* Disable absolute positioning on mobile to fix layout issues */
-  .carousel-item {
-    position: absolute;
-    height: 100%;
-  }
-  
-  /* Improve transition speed on mobile */
-  .carousel-item, 
-  .carousel-item[aria-hidden="false"] {
-    transition: opacity 0.5s ease;
-  }
+.carousel-item a:hover::before {
+  left: 100%;
 }
 
-.carousel-item img {
-  transform-origin: center;
-  transition: transform 10s ease-out;
+.carousel-item a svg {
+  transition: transform 0.3s ease;
 }
 
-.carousel-item[aria-hidden="false"] img {
-  transform: scale(1.05);
+.carousel-item a:hover svg {
+  transform: translateX(4px);
 }
 
 /* Navigation controls */
@@ -568,74 +591,4 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* For the CTA button in carousel */
-.carousel-item a {
-  position: relative;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-}
-
-.carousel-item a:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  background-color: #d97706; /* amber-600 darker */
-}
-
-.carousel-item a:active {
-  transform: translateY(0);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.carousel-item a::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
-  transition: 0.8s;
-  z-index: 1;
-}
-
-.carousel-item a:hover::before {
-  left: 100%;
-}
-
-.carousel-item a svg {
-  transition: transform 0.3s ease;
-}
-
-.carousel-item a:hover svg {
-  transform: translateX(4px);
-}
-
-/* Background gradient enhancement */
-.carousel-item .bg-gradient-to-r {
-  background: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.85) 0%,
-    rgba(0, 0, 0, 0.7) 35%,
-    rgba(0, 0, 0, 0.4) 65%,
-    rgba(0, 0, 0, 0.2) 100%
-  );
-  transition: background 0.5s ease;
-}
-
-.carousel-item:hover .bg-gradient-to-r {
-  background: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.8) 0%,
-    rgba(0, 0, 0, 0.65) 35%,
-    rgba(0, 0, 0, 0.35) 65%,
-    rgba(0, 0, 0, 0.15) 100%
-  );
 }
