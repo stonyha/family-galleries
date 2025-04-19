@@ -11,6 +11,7 @@ export interface GalleryFields {
   images: Asset[];
   location?: string;
   tags?: string[];
+  cloudImages?: CloudinaryImage[];
 }
 
 export interface HomePageFields {
@@ -33,6 +34,20 @@ export interface FeatureCarouselItemFields {
   ctaLink: string;
   image: Asset;
   order: number;
+}
+
+export interface CloudinaryImage {
+  public_id: string;
+  secure_url: string;
+  width: number;
+  height: number;
+  format: string;
+  resource_type: string;
+  created_at: string;
+  bytes: number;
+  type: string;
+  url: string;
+  version: number;
 }
 
 // Use type assertion when working with the actual Contentful API

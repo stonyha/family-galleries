@@ -6,7 +6,7 @@ import Masonry from 'react-masonry-css';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 type PhotoGridProps = {
-  images: any[]; // Contentful assets
+  images: any[]; // Cloudinary images array
 };
 
 // Interface for keeping track of clicked image position
@@ -134,12 +134,12 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
   // Process image dimensions for better layout
   const processedImages = useMemo(() => {
     return images.map(image => {
-      const width = image?.fields?.file?.details?.image?.width || 800;
-      const height = image?.fields?.file?.details?.image?.height || 600;
+      // Handle Cloudinary image data structure
+      const width = image?.width || 800;
+      const height = image?.height || 600;
       const aspectRatio = height / width;
       
       // Calculate display dimensions that maintain aspect ratio
-      // This helps prevent layout shifts and creates a more balanced grid
       const displayWidth = 800;
       const displayHeight = Math.round(displayWidth * aspectRatio);
       
@@ -353,9 +353,9 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
   
   // Get current Contentful image data
   const currentImage = images[currentImageIndex];
-  const imageUrl = currentImage?.fields?.file?.url || '';
-  const imageAlt = currentImage?.fields?.title || `Photo ${currentImageIndex + 1}`;
-  const imageTitle = currentImage?.fields?.title || `Photo ${currentImageIndex + 1} of ${images.length}`;
+  const imageUrl = currentImage?.secure_url || '';
+  const imageAlt = currentImage?.public_id || `Photo ${currentImageIndex + 1}`;
+  const imageTitle = currentImage?.public_id || `Photo ${currentImageIndex + 1} of ${images.length}`;
   
   // Add media query to show arrows on larger screens
   useEffect(() => {
@@ -401,19 +401,19 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
           columnClassName="masonry-grid-column"
         >
           {processedImages.map((image, index) => {
-            const imageUrl = image?.fields?.file?.url || '';
-            const imageAlt = image?.fields?.title || `Photo ${index + 1}`;
+            const imageUrl = image?.secure_url || '';
+            const imageAlt = image?.public_id || `Photo ${index + 1}`;
             
             return (
               <div 
-                key={image.sys.id} 
+                key={image.public_id} 
                 className="gallery-item opacity-0"
                 onClick={(e) => openLightbox(index, e)}
               >
                 {imageUrl && (
                   <div className="relative rounded-lg overflow-hidden">
                     <Image
-                      src={`https:${imageUrl}`}
+                      src={imageUrl}
                       alt={imageAlt}
                       width={image.displayWidth}
                       height={image.displayHeight}
@@ -601,7 +601,7 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
                       <Image
                         ref={lightboxContentRef as any}
                         key={`lightbox-image-${currentImageIndex}`}
-                        src={`https:${imageUrl}`}
+                        src={imageUrl}
                         alt={imageAlt}
                         width={1200}
                         height={800}

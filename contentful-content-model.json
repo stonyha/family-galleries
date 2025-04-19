@@ -84,6 +84,16 @@
           "validations": [],
           "disabled": false,
           "omitted": false
+        },
+        {
+          "id": "cloudImages",
+          "name": "Cloud Images",
+          "type": "Object",
+          "localized": false,
+          "required": false,
+          "validations": [],
+          "disabled": false,
+          "omitted": false
         }
       ]
     },
