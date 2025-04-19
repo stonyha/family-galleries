@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Layout from '@/components/layout/Layout';
 import PhotoGrid from '@/components/gallery/PhotoGrid';
+import ScrollToTop from '@/components/common/ScrollToTop';
 import { getGalleryBySlug, getGalleries } from '@/lib/contentful';
 import { formatEventDate } from '@/utils/dateUtils';
 
@@ -202,6 +203,9 @@ export default async function GalleryPage({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <PhotoGrid images={images} />
       </div>
+      
+      {/* Scroll to top button */}
+      <ScrollToTop />
     </Layout>
   );
 } 
