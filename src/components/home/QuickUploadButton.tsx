@@ -167,11 +167,37 @@ export default function QuickUploadButton({ className = '' }: QuickUploadButtonP
         setUploadProgress(100);
         setUploadSuccess(true);
         
+        // Clear cache for newly uploaded images
+        const clearImageCache = async () => {
+          try {
+            // Clear browser cache for image requests
+            if ('caches' in window) {
+              const cacheNames = await caches.keys();
+              await Promise.all(
+                cacheNames.map(cacheName => caches.delete(cacheName))
+              );
+            }
+            
+            // Force reload images by adding a timestamp query parameter
+            const imageElements = document.querySelectorAll('img');
+            imageElements.forEach(img => {
+              if (img.src) {
+                const url = new URL(img.src);
+                url.searchParams.set('t', Date.now().toString());
+                img.src = url.toString();
+              }
+            });
+          } catch (error) {
+            console.error('Error clearing cache:', error);
+          }
+        };
+        
         // If uploaded to a gallery, redirect to that gallery after a delay
         if (selectedGallery) {
           const gallerySlug = galleries.find(g => g.sys.id === selectedGallery)?.fields?.slug;
           if (gallerySlug) {
             setTimeout(() => {
+              clearImageCache();
               setIsModalOpen(false);
               router.push(`/galleries/${gallerySlug}`);
               router.refresh();
@@ -179,6 +205,7 @@ export default function QuickUploadButton({ className = '' }: QuickUploadButtonP
           }
         } else {
           setTimeout(() => {
+            clearImageCache();
             setIsModalOpen(false);
             router.refresh(); // Refresh the current page to show new uploads
           }, 1500);

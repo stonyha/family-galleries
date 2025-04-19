@@ -22,6 +22,13 @@ interface TouchPosition {
   y: number;
 }
 
+// Interface for tracking zoom state
+interface ZoomState {
+  scale: number;
+  translateX: number;
+  translateY: number;
+}
+
 export default function PhotoGrid({ images }: PhotoGridProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -33,6 +40,11 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [touchStart, setTouchStart] = useState<TouchPosition | null>(null);
   const [touchEnd, setTouchEnd] = useState<TouchPosition | null>(null);
+  const [initialTouchDistance, setInitialTouchDistance] = useState<number | null>(null);
+  const [initialScale, setInitialScale] = useState<number>(1);
+  const [zoomState, setZoomState] = useState<ZoomState>({ scale: 1, translateX: 0, translateY: 0 });
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [lastTapTime, setLastTapTime] = useState<number>(0);
   const lightboxRef = useRef<HTMLDivElement>(null);
   const lightboxImageRef = useRef<HTMLDivElement>(null);
   const lightboxContentRef = useRef<HTMLImageElement>(null);
@@ -40,14 +52,71 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
   
   // Minimum swipe distance in pixels to trigger navigation
   const MIN_SWIPE_DISTANCE = 30;
+  // Maximum zoom scale
+  const MAX_ZOOM_SCALE = 3;
+  // Double tap threshold in milliseconds
+  const DOUBLE_TAP_THRESHOLD = 300;
+  
+  // Calculate distance between two touch points
+  const getTouchDistance = (touch1: Touch, touch2: Touch): number => {
+    const dx = touch1.clientX - touch2.clientX;
+    const dy = touch1.clientY - touch2.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+  
+  // Calculate midpoint between two touch points
+  const getTouchMidpoint = (touch1: Touch, touch2: Touch): TouchPosition => {
+    return {
+      x: (touch1.clientX + touch2.clientX) / 2,
+      y: (touch1.clientY + touch2.clientY) / 2
+    };
+  };
   
   // Handle touch start event
   const handleTouchStart = (e: TouchEvent) => {
     if (e.touches && e.touches.length > 0) {
-      setTouchStart({
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY
-      });
+      // Single touch
+      if (e.touches.length === 1) {
+        setTouchStart({
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY
+        });
+        
+        // Check for double tap
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTapTime;
+        
+        if (tapLength < DOUBLE_TAP_THRESHOLD && tapLength > 0) {
+          // Double tap detected
+          if (isZoomed) {
+            // Reset zoom
+            setZoomState({ scale: 1, translateX: 0, translateY: 0 });
+            setIsZoomed(false);
+          } else {
+            // Zoom in at tap position
+            const rect = lightboxContentRef.current?.getBoundingClientRect();
+            if (rect) {
+              const tapX = e.touches[0].clientX - rect.left;
+              const tapY = e.touches[0].clientY - rect.top;
+              
+              // Calculate the point to zoom into (center of the tap)
+              const translateX = (rect.width / 2 - tapX) * 2;
+              const translateY = (rect.height / 2 - tapY) * 2;
+              
+              setZoomState({ scale: 2, translateX, translateY });
+              setIsZoomed(true);
+            }
+          }
+        }
+        
+        setLastTapTime(currentTime);
+      } 
+      // Multi-touch (pinch)
+      else if (e.touches.length === 2) {
+        const distance = getTouchDistance(e.touches[0], e.touches[1]);
+        setInitialTouchDistance(distance);
+        setInitialScale(zoomState.scale);
+      }
     }
   };
   
@@ -55,41 +124,93 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
   const handleTouchMove = (e: TouchEvent) => {
     if (!touchStart || !e.touches || e.touches.length === 0) return;
     
-    setTouchEnd({
-      x: e.touches[0].clientX,
-      y: e.touches[0].clientY
-    });
-    
-    // Prevent default to avoid scrolling while swiping in the lightbox
-    e.preventDefault();
+    // Single touch - handle panning when zoomed
+    if (e.touches.length === 1 && isZoomed) {
+      setTouchEnd({
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY
+      });
+      
+      // Calculate the movement delta
+      const deltaX = e.touches[0].clientX - touchStart.x;
+      const deltaY = e.touches[0].clientY - touchStart.y;
+      
+      // Update the translation
+      setZoomState(prev => ({
+        ...prev,
+        translateX: prev.translateX + deltaX,
+        translateY: prev.translateY + deltaY
+      }));
+      
+      // Update touch start for next move event
+      setTouchStart({
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY
+      });
+      
+      // Prevent default to avoid scrolling while panning
+      e.preventDefault();
+    } 
+    // Multi-touch - handle pinch zoom
+    else if (e.touches.length === 2 && initialTouchDistance !== null) {
+      const currentDistance = getTouchDistance(e.touches[0], e.touches[1]);
+      const scaleFactor = currentDistance / initialTouchDistance;
+      
+      // Calculate new scale with limits
+      const newScale = Math.min(Math.max(initialScale * scaleFactor, 1), MAX_ZOOM_SCALE);
+      
+      // Get the midpoint of the current touch points
+      const midpoint = getTouchMidpoint(e.touches[0], e.touches[1]);
+      
+      // Calculate the translation to keep the zoom centered on the pinch point
+      const rect = lightboxContentRef.current?.getBoundingClientRect();
+      if (rect) {
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        // Calculate the point to zoom into (center of the pinch)
+        const translateX = (centerX - midpoint.x) * (newScale - 1);
+        const translateY = (centerY - midpoint.y) * (newScale - 1);
+        
+        setZoomState({ scale: newScale, translateX, translateY });
+        setIsZoomed(newScale > 1);
+      }
+      
+      // Prevent default to avoid scrolling while pinching
+      e.preventDefault();
+    }
   };
   
   // Handle touch end event
   const handleTouchEnd = (e: TouchEvent) => {
     if (!touchStart || !touchEnd) return;
     
-    const distanceX = touchStart.x - touchEnd.x;
-    const distanceY = touchStart.y - touchEnd.y;
-    const isHorizontalSwipe = Math.abs(distanceX) > Math.abs(distanceY);
-    
-    if (isHorizontalSwipe && Math.abs(distanceX) > MIN_SWIPE_DISTANCE) {
-      if (distanceX > 0) {
-        // Swiped left, go to next image
-        goToNext();
-      } else {
-        // Swiped right, go to previous image
-        goToPrevious();
+    // Only handle swipe gestures if not zoomed
+    if (!isZoomed) {
+      const distanceX = touchStart.x - touchEnd.x;
+      const distanceY = touchStart.y - touchEnd.y;
+      const isHorizontalSwipe = Math.abs(distanceX) > Math.abs(distanceY);
+      
+      if (isHorizontalSwipe && Math.abs(distanceX) > MIN_SWIPE_DISTANCE) {
+        if (distanceX > 0) {
+          // Swiped left, go to next image
+          goToNext();
+        } else {
+          // Swiped right, go to previous image
+          goToPrevious();
+        }
+      } else if (!isHorizontalSwipe && distanceY < -MIN_SWIPE_DISTANCE) {
+        // Swiped down, close the lightbox
+        // We use a negative value since distanceY is calculated as touchStart.y - touchEnd.y
+        // So a downward swipe gives a negative value
+        closeLightbox();
       }
-    } else if (!isHorizontalSwipe && distanceY < -MIN_SWIPE_DISTANCE) {
-      // Swiped down, close the lightbox
-      // We use a negative value since distanceY is calculated as touchStart.y - touchEnd.y
-      // So a downward swipe gives a negative value
-      closeLightbox();
     }
     
     // Reset touch positions
     setTouchStart(null);
     setTouchEnd(null);
+    setInitialTouchDistance(null);
   };
   
   useEffect(() => {
@@ -151,6 +272,10 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
   // Handle image change during navigation
   useEffect(() => {
     if (nextImageIndex !== null && lightboxOpen) {
+      // Reset zoom state when changing images
+      setZoomState({ scale: 1, translateX: 0, translateY: 0 });
+      setIsZoomed(false);
+      
       // Apply appropriate animation class based on slide direction
       if (lightboxContentRef.current) {
         const animationClass = slideDirection === 'left' 
@@ -206,6 +331,10 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
     setLightboxOpen(true);
     document.body.style.overflow = 'hidden';
     
+    // Reset zoom state when opening lightbox
+    setZoomState({ scale: 1, translateX: 0, translateY: 0 });
+    setIsZoomed(false);
+    
     // Calculate transform origin based on the clicked image position
     // This makes the animation start from the correct position
     setTimeout(() => {
@@ -225,6 +354,10 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
   const closeLightbox = () => {
     setLightboxOpen(false);
     document.body.style.overflow = '';
+    
+    // Reset zoom state when closing lightbox
+    setZoomState({ scale: 1, translateX: 0, translateY: 0 });
+    setIsZoomed(false);
     
     // Clear source position after animation completes
     setTimeout(() => {
@@ -529,8 +662,9 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
                 quality={90}
                 style={{ 
                   willChange: 'transform',
-                  transform: 'translateZ(0)',
-                  backfaceVisibility: 'hidden'
+                  transform: `translateZ(0) scale(${zoomState.scale}) translate(${zoomState.translateX}px, ${zoomState.translateY}px)`,
+                  backfaceVisibility: 'hidden',
+                  transition: isTransitioning ? 'none' : 'transform 0.3s ease-out'
                 }}
               />
             )}
