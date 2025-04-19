@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import Masonry from 'react-masonry-css';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 type PhotoGridProps = {
   images: any[]; // Contentful assets
@@ -49,6 +50,7 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
   const lightboxImageRef = useRef<HTMLDivElement>(null);
   const lightboxContentRef = useRef<HTMLImageElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+  const transformComponentRef = useRef<any>(null);
   
   // Minimum swipe distance in pixels to trigger navigation
   const MIN_SWIPE_DISTANCE = 30;
@@ -331,10 +333,6 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
     setLightboxOpen(true);
     document.body.style.overflow = 'hidden';
     
-    // Reset zoom state when opening lightbox
-    setZoomState({ scale: 1, translateX: 0, translateY: 0 });
-    setIsZoomed(false);
-    
     // Calculate transform origin based on the clicked image position
     // This makes the animation start from the correct position
     setTimeout(() => {
@@ -347,6 +345,14 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
         // Set transform origin relative to the center of the viewport
         lightboxImageRef.current.style.transformOrigin = `calc(50% - ${originX}px) calc(50% - ${originY}px)`;
         lightboxImageRef.current.classList.add('lightbox-image-transition');
+        
+        // Center the image in the lightbox after a short delay
+        setTimeout(() => {
+          if (transformComponentRef.current) {
+            transformComponentRef.current.resetTransform();
+            transformComponentRef.current.setTransform(0, 0, 1);
+          }
+        }, 300);
       }
     }, 0);
   };
@@ -640,7 +646,7 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
           
           <div 
             ref={lightboxImageRef}
-            className="h-full w-full md:h-auto md:max-h-[90vh] md:max-w-[90vw] relative lightbox-content overflow-hidden"
+            className="h-full w-full md:h-auto md:max-h-[90vh] md:max-w-[90vw] relative lightbox-content overflow-hidden flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
             style={{ 
               willChange: 'transform, opacity',
@@ -651,33 +657,55 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
             }}
           >
             {imageUrl && (
-              <div 
-                className="relative w-full h-full flex items-center justify-center"
-                style={{
-                  overflow: 'hidden',
-                  touchAction: 'none'
+              <TransformWrapper
+                ref={transformComponentRef}
+                initialScale={1}
+                minScale={0.5}
+                maxScale={4}
+                centerOnInit={true}
+                wheel={{ step: 0.1 }}
+                doubleClick={{ step: 2 }}
+                panning={{ disabled: false }}
+                smooth={true}
+                alignmentAnimation={{ sizeX: 100, sizeY: 100 }}
+                velocityAnimation={{ equalToMove: true }}
+                limitToBounds={true}
+                centerZoomedOut={true}
+                onTransformed={(e, state) => {
+                  // Handle transformed event if needed
                 }}
               >
-                <Image
-                  ref={lightboxContentRef as any}
-                  key={`lightbox-image-${currentImageIndex}`}
-                  src={`https:${imageUrl}`}
-                  alt={imageAlt}
-                  width={1200}
-                  height={800}
-                  className="h-full w-full md:h-auto md:max-h-[90vh] object-contain"
-                  priority={true}
-                  quality={90}
-                  style={{ 
-                    willChange: 'transform',
-                    transform: `translateZ(0) scale(${zoomState.scale}) translate(${zoomState.translateX}px, ${zoomState.translateY}px)`,
-                    backfaceVisibility: 'hidden',
-                    transition: isTransitioning ? 'none' : 'transform 0.1s ease-out',
-                    touchAction: 'none', // Prevent browser handling of touch events
-                    transformOrigin: 'center center'
-                  }}
-                />
-              </div>
+                {({ zoomIn, zoomOut, resetTransform }) => (
+                  <TransformComponent
+                    wrapperClass="w-full h-full flex items-center justify-center"
+                    contentClass="w-full h-full flex items-center justify-center"
+                    wrapperStyle={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    contentStyle={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    <div className="flex items-center justify-center w-full h-full">
+                      <Image
+                        ref={lightboxContentRef as any}
+                        key={`lightbox-image-${currentImageIndex}`}
+                        src={`https:${imageUrl}`}
+                        alt={imageAlt}
+                        width={1200}
+                        height={800}
+                        className="h-full w-full md:h-auto md:max-h-[90vh] object-contain"
+                        priority={true}
+                        quality={90}
+                        style={{ 
+                          willChange: 'transform',
+                          backfaceVisibility: 'hidden',
+                          transition: isTransitioning ? 'none' : 'transform 0.1s ease-out',
+                          touchAction: 'none', // Prevent browser handling of touch events
+                          margin: '0 auto',
+                          display: 'block'
+                        }}
+                      />
+                    </div>
+                  </TransformComponent>
+                )}
+              </TransformWrapper>
             )}
           </div>
         </div>
