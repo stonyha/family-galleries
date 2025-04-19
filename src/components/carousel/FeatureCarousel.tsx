@@ -11,6 +11,12 @@ export type FeatureItem = {
   ctaLabel: string;
   ctaLink: string;
   image: string;
+  imageMobile?: Array<{
+    secure_url: string;
+    width: number;
+    height: number;
+    [key: string]: any; // Allow for other properties that might be in the object
+  }>;
   altText: string;
 };
 

@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { FeatureItem } from './FeatureCarousel';
+import { useEffect, useState } from 'react';
 
 type FeatureCarouselItemProps = {
   item: FeatureItem;
@@ -13,7 +14,52 @@ export default function FeatureCarouselItem({
   isActive,
   'aria-hidden': ariaHidden = !isActive,
 }: FeatureCarouselItemProps) {
-  const { heading, summary, ctaLabel, ctaLink, image, altText } = item;
+  const { heading, summary, ctaLabel, ctaLink, image, imageMobile, altText } = item;
+  const [isMobile, setIsMobile] = useState(false);
+  const [imageToUse, setImageToUse] = useState(image);
+
+  // Check if we're on a mobile device and update the image accordingly
+  useEffect(() => {
+    const checkIfMobile = () => {
+      const isMobileView = window.innerWidth < 768; // 768px is typical md breakpoint
+      setIsMobile(isMobileView);
+      
+      console.log('Screen width:', window.innerWidth);
+      console.log('Is mobile view:', isMobileView);
+      console.log('ImageMobile data:', imageMobile);
+      
+      // Update the image based on screen size
+      if (isMobileView && imageMobile) {
+        // Check if imageMobile is an array with at least one element
+        if (Array.isArray(imageMobile) && imageMobile.length > 0 && imageMobile[0].secure_url) {
+          console.log('Using mobile image from array:', imageMobile[0].secure_url);
+          setImageToUse(imageMobile[0].secure_url as string);
+        } 
+        // Check if imageMobile is an object with secure_url property
+        else if (typeof imageMobile === 'object' && imageMobile !== null && 'secure_url' in imageMobile) {
+          console.log('Using mobile image from object:', (imageMobile as { secure_url: string }).secure_url);
+          setImageToUse((imageMobile as { secure_url: string }).secure_url);
+        }
+        // If imageMobile exists but doesn't have the expected structure, use desktop image
+        else {
+          console.log('ImageMobile exists but has unexpected structure, using desktop image:', image);
+          setImageToUse(image);
+        }
+      } else {
+        console.log('Using desktop image:', image);
+        setImageToUse(image);
+      }
+    };
+    
+    // Initial check
+    checkIfMobile();
+    
+    // Add event listener for window resize
+    window.addEventListener('resize', checkIfMobile);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, [image, imageMobile]);
 
   // Function to determine if we should use Link or anchor
   // Ensure ctaLink is a string before calling startsWith
@@ -100,7 +146,7 @@ export default function FeatureCarouselItem({
       {/* Full-screen background image */}
       <div className="absolute inset-0 w-full h-full">
         <Image
-          src={image}
+          src={imageToUse}
           alt={altText}
           fill
           sizes="100vw"

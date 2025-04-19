@@ -238,6 +238,16 @@
           "type": "Integer",
           "required": true,
           "localized": false
+        },
+        {
+          "id": "imageMobile",
+          "name": "Image (Mobile)",
+          "type": "Object",
+          "localized": false,
+          "required": false,
+          "validations": [],
+          "disabled": false,
+          "omitted": false
         }
       ]
     }

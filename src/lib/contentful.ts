@@ -265,6 +265,7 @@ export const getFeatureCarouselItems = async (limit = 3) => {
         ctaLabel: fields.ctaLabel || 'Learn More',
         ctaLink,
         image: imageUrl,
+        imageMobile: fields.imageMobile || null,
         altText: imageAlt,
       };
     });
