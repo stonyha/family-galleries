@@ -315,7 +315,7 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
         lightboxElement.removeEventListener('touchend', handleTouchEnd);
       };
     }
-  }, [lightboxOpen, touchStart, touchEnd]);
+  }, [lightboxOpen, touchStart, touchEnd, isZoomed, zoomState, initialTouchDistance, initialScale]);
   
   const openLightbox = (index: number, event: React.MouseEvent<HTMLDivElement>) => {
     // Get the position of the clicked image for animation
@@ -558,7 +558,7 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
           }}
         >
           <button
-            className="absolute top-4 right-4 text-white z-[10000] p-2 lightbox-controls
+            className="absolute top-4 right-4 text-white z-[10000] p-2
             bg-black bg-opacity-50 rounded-full w-10 h-10 flex items-center justify-center"
             onClick={(e) => {
               e.stopPropagation();
@@ -640,33 +640,44 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
           
           <div 
             ref={lightboxImageRef}
-            className="h-full w-full md:h-auto md:max-h-[90vh] md:max-w-[90vw] relative lightbox-content"
+            className="h-full w-full md:h-auto md:max-h-[90vh] md:max-w-[90vw] relative lightbox-content overflow-hidden"
             onClick={(e) => e.stopPropagation()}
             style={{ 
               willChange: 'transform, opacity',
               transform: 'translateZ(0)',
               backfaceVisibility: 'hidden',
-              perspective: 1000
+              perspective: 1000,
+              touchAction: 'none' // Prevent browser handling of touch events
             }}
           >
             {imageUrl && (
-              <Image
-                ref={lightboxContentRef as any}
-                key={`lightbox-image-${currentImageIndex}`}
-                src={`https:${imageUrl}`}
-                alt={imageAlt}
-                width={1200}
-                height={800}
-                className="h-full w-full md:h-auto md:max-h-[90vh] object-contain"
-                priority={true}
-                quality={90}
-                style={{ 
-                  willChange: 'transform',
-                  transform: `translateZ(0) scale(${zoomState.scale}) translate(${zoomState.translateX}px, ${zoomState.translateY}px)`,
-                  backfaceVisibility: 'hidden',
-                  transition: isTransitioning ? 'none' : 'transform 0.3s ease-out'
+              <div 
+                className="relative w-full h-full flex items-center justify-center"
+                style={{
+                  overflow: 'hidden',
+                  touchAction: 'none'
                 }}
-              />
+              >
+                <Image
+                  ref={lightboxContentRef as any}
+                  key={`lightbox-image-${currentImageIndex}`}
+                  src={`https:${imageUrl}`}
+                  alt={imageAlt}
+                  width={1200}
+                  height={800}
+                  className="h-full w-full md:h-auto md:max-h-[90vh] object-contain"
+                  priority={true}
+                  quality={90}
+                  style={{ 
+                    willChange: 'transform',
+                    transform: `translateZ(0) scale(${zoomState.scale}) translate(${zoomState.translateX}px, ${zoomState.translateY}px)`,
+                    backfaceVisibility: 'hidden',
+                    transition: isTransitioning ? 'none' : 'transform 0.1s ease-out',
+                    touchAction: 'none', // Prevent browser handling of touch events
+                    transformOrigin: 'center center'
+                  }}
+                />
+              </div>
             )}
           </div>
         </div>
