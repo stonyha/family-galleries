@@ -75,9 +75,12 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
         if (currentScale <= 1) {
           // If not zoomed, zoom in to the MAX_ZOOM_SCALE
           transformComponentRef.current.zoomIn(MAX_ZOOM_SCALE);
-        } else {
-          // If already zoomed, reset to normal
+        } else if (currentScale >= MAX_ZOOM_SCALE || currentScale > 3) {
+          // If at or near maximum zoom, reset to normal
           transformComponentRef.current.resetTransform();
+        } else {
+          // If zoomed but not at max, go to max zoom
+          transformComponentRef.current.zoomIn(MAX_ZOOM_SCALE);
         }
       }
     }
@@ -341,6 +344,11 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
     // Calculate the next image index
     const prevIndex = currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
     
+    // Reset zoom when changing images
+    if (transformComponentRef.current) {
+      transformComponentRef.current.resetTransform();
+    }
+    
     // Set the current image to the previous one immediately
     setCurrentImageIndex(prevIndex);
     
@@ -361,6 +369,11 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
     
     // Calculate the next image index
     const nextIndex = currentImageIndex === images.length - 1 ? 0 : currentImageIndex + 1;
+    
+    // Reset zoom when changing images
+    if (transformComponentRef.current) {
+      transformComponentRef.current.resetTransform();
+    }
     
     // Set the current image to the next one immediately
     setCurrentImageIndex(nextIndex);
