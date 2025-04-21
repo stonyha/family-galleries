@@ -579,3 +579,13 @@ body {
   opacity: 1;
   transform: none;
 }
+
+/* Hide share buttons when in shared view mode */
+body.shared-view-mode .share-button-wrapper {
+  display: none !important;
+}
+
+/* This also ensures shared view banner is visible */
+body.shared-view-mode .shared-view-badge {
+  display: flex !important;
+}

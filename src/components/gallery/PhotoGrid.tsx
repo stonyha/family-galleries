@@ -59,6 +59,33 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
   // Double tap threshold in milliseconds
   const DOUBLE_TAP_THRESHOLD = 300;
   
+  // Handle manual double tap for more reliable zooming
+  const handleManualDoubleTap = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    
+    const now = Date.now();
+    const timeDiff = now - lastTapTime;
+    
+    if (timeDiff < DOUBLE_TAP_THRESHOLD) {
+      // This is a double tap/click
+      if (transformComponentRef.current) {
+        // Get current scale
+        const currentScale = transformComponentRef.current.state.scale;
+        
+        if (currentScale <= 1) {
+          // If not zoomed, zoom in to the MAX_ZOOM_SCALE
+          transformComponentRef.current.zoomIn(MAX_ZOOM_SCALE);
+        } else {
+          // If already zoomed, reset to normal
+          transformComponentRef.current.resetTransform();
+        }
+      }
+    }
+    
+    // Update last tap time
+    setLastTapTime(now);
+  };
+  
   // Calculate distance between two touch points
   const getTouchDistance = (touch1: Touch, touch2: Touch): number => {
     const dx = touch1.clientX - touch2.clientX;
@@ -105,7 +132,26 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
     const distanceY = touchStart.y - touchEnd.y;
     const isHorizontalSwipe = Math.abs(distanceX) > Math.abs(distanceY);
     
-    if (isHorizontalSwipe && Math.abs(distanceX) > MIN_SWIPE_DISTANCE) {
+    // Check for double tap
+    const now = Date.now();
+    const timeDiff = now - lastTapTime;
+    
+    // If very small movement (not a swipe) and within double-tap threshold
+    if (Math.abs(distanceX) < 10 && Math.abs(distanceY) < 10 && timeDiff < DOUBLE_TAP_THRESHOLD) {
+      // This is a double tap
+      if (transformComponentRef.current) {
+        // Get current scale
+        const currentScale = transformComponentRef.current.state.scale;
+        
+        if (currentScale <= 1) {
+          // If not zoomed, zoom in
+          transformComponentRef.current.zoomIn(MAX_ZOOM_SCALE);
+        } else {
+          // If already zoomed, reset to normal
+          transformComponentRef.current.resetTransform();
+        }
+      }
+    } else if (isHorizontalSwipe && Math.abs(distanceX) > MIN_SWIPE_DISTANCE) {
       if (distanceX > 0) {
         // Swiped left, go to next image
         goToNext();
@@ -119,6 +165,9 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
       // So a downward swipe gives a negative value
       closeLightbox();
     }
+    
+    // Update last tap time
+    setLastTapTime(now);
     
     // Reset touch positions
     setTouchStart(null);
@@ -552,7 +601,7 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
                 maxScale={4}
                 centerOnInit={true}
                 wheel={{ step: 0.1 }}
-                doubleClick={{ step: 2 }}
+                doubleClick={{ disabled: false, mode: "toggle", step: MAX_ZOOM_SCALE }}
                 panning={{ disabled: false }}
                 smooth={true}
                 alignmentAnimation={{ sizeX: 100, sizeY: 100 }}
@@ -560,7 +609,13 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
                 limitToBounds={true}
                 centerZoomedOut={true}
                 onTransformed={(e, state) => {
-                  // Handle transformed event if needed
+                  // Update isZoomed state based on scale
+                  setIsZoomed(state.scale > 1);
+                  setZoomState({
+                    scale: state.scale,
+                    translateX: state.positionX,
+                    translateY: state.positionY
+                  });
                 }}
                 onPanning={(ref, event) => {
                   // Get the current transform state from the ref
@@ -608,6 +663,7 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
                         className="h-full w-full md:h-auto md:max-h-[90vh] object-contain"
                         priority={true}
                         quality={90}
+                        onClick={handleManualDoubleTap}
                         style={{ 
                           willChange: 'transform',
                           backfaceVisibility: 'hidden',
