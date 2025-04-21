@@ -147,11 +147,14 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
         const currentScale = transformComponentRef.current.state.scale;
         
         if (currentScale <= 1) {
-          // If not zoomed, zoom in
+          // If not zoomed, zoom in to the MAX_ZOOM_SCALE
           transformComponentRef.current.zoomIn(MAX_ZOOM_SCALE);
-        } else {
-          // If already zoomed, reset to normal
+        } else if (currentScale >= MAX_ZOOM_SCALE || currentScale > 3) {
+          // If at or near maximum zoom, reset to normal
           transformComponentRef.current.resetTransform();
+        } else {
+          // If zoomed but not at max, go to max zoom
+          transformComponentRef.current.zoomIn(MAX_ZOOM_SCALE);
         }
       }
     } else if (isHorizontalSwipe && Math.abs(distanceX) > MIN_SWIPE_DISTANCE) {
@@ -614,7 +617,7 @@ export default function PhotoGrid({ images }: PhotoGridProps) {
                 maxScale={4}
                 centerOnInit={true}
                 wheel={{ step: 0.1 }}
-                doubleClick={{ disabled: false, mode: "toggle", step: MAX_ZOOM_SCALE }}
+                doubleClick={{ disabled: true }}
                 panning={{ disabled: false }}
                 smooth={true}
                 alignmentAnimation={{ sizeX: 100, sizeY: 100 }}
