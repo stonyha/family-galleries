@@ -377,8 +377,8 @@ body {
   width: 100%;
   position: relative;
   overflow: hidden;
-  height: 50vh; /* Reduced height on mobile */
-  max-height: 50vh;
+  aspect-ratio: 5/4; /* 5:4 aspect ratio on mobile as requested */
+  max-height: 80vh;
 }
 
 /* Media query for larger screens */
@@ -386,6 +386,7 @@ body {
   .feature-carousel {
     height: 70vh; /* Slightly taller on larger screens */
     max-height: 70vh;
+    aspect-ratio: unset; /* Remove the aspect ratio constraint on larger screens */
   }
 }
 
@@ -424,39 +425,27 @@ body {
   position: relative;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
+  background-color: transparent;
 }
 
 .carousel-item a:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  background-color: #d97706; /* amber-600 darker */
+  transform: none;
+  box-shadow: none;
+  background-color: transparent;
 }
 
 .carousel-item a:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: none;
+  box-shadow: none;
 }
 
 .carousel-item a::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
-  transition: 0.8s;
-  z-index: 1;
+  display: none;
 }
 
 .carousel-item a:hover::before {
-  left: 100%;
+  display: none;
 }
 
 .carousel-item a svg {
@@ -472,8 +461,14 @@ body {
   backdrop-filter: blur(5px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  opacity: 0.8;
+  opacity: 0;
   transform: translateY(-50%) scale(1);
+}
+
+.feature-carousel.hover .carousel-nav-btn,
+.carousel-nav-btn:focus,
+.carousel-nav-btn:focus-visible {
+  opacity: 0.8;
 }
 
 .carousel-nav-btn:hover {
@@ -549,46 +544,38 @@ body {
   }
 }
 
-/* Carousel content */
-.carousel-item .max-w-xl {
-  transform: translateZ(0);
-  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-}
-
-.carousel-item .max-w-xl:hover {
-  background-color: rgba(0, 0, 0, 0.4);
-  transform: translateY(-5px);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
-}
-
-.carousel-item[aria-hidden="false"] h2 {
-  animation: slideUpFadeIn 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.carousel-item[aria-hidden="false"] p {
-  animation: slideUpFadeIn 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) 0.2s forwards;
-  opacity: 0;
-  transform: translateY(20px);
+/* Clear previously added carousel item animations and styles */
+.carousel-item a, 
+.carousel-item a:hover, 
+.carousel-item a:focus, 
+.carousel-item a:active {
+  transition: none;
+  animation: none;
+  transform: none;
+  background-color: transparent !important;
+  box-shadow: none;
+  opacity: 1;
 }
 
 .carousel-item[aria-hidden="false"] a {
-  animation: slideUpFadeIn 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) 0.4s forwards;
-  opacity: 0;
-  transform: translateY(20px);
+  animation: none;
+  opacity: 1;
+  transform: none;
+  background-color: transparent !important;
 }
 
-@keyframes slideUpFadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.carousel-item .max-w-xl,
+.carousel-item .max-w-xl:hover {
+  background-color: transparent;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Clear animations for carousel items */
+.carousel-item[aria-hidden="false"] h2,
+.carousel-item[aria-hidden="false"] p,
+.carousel-item[aria-hidden="false"] a {
+  animation: none;
+  opacity: 1;
+  transform: none;
 }

@@ -6,10 +6,6 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
 export type FeatureItem = {
   id: string;
-  heading: string;
-  summary: string;
-  ctaLabel: string;
-  ctaLink: string;
   image: string;
   imageMobile?: Array<{
     secure_url: string;
@@ -17,7 +13,7 @@ export type FeatureItem = {
     height: number;
     [key: string]: any; // Allow for other properties that might be in the object
   }>;
-  altText: string;
+  ctaLink: string;
 };
 
 type FeatureCarouselProps = {
@@ -33,6 +29,7 @@ const FeatureCarousel: React.FC<FeatureCarouselProps> = ({
 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
@@ -41,16 +38,22 @@ const FeatureCarousel: React.FC<FeatureCarouselProps> = ({
   // Function to advance to the next slide
   const nextSlide = useCallback(() => {
     setActiveIndex((prevIndex) => (prevIndex + 1) % items.length);
+    // Reset hover state when slide changes
+    setIsHovering(false);
   }, [items.length]);
 
   // Function to go to the previous slide
   const prevSlide = useCallback(() => {
     setActiveIndex((prevIndex) => (prevIndex - 1 + items.length) % items.length);
+    // Reset hover state when slide changes
+    setIsHovering(false);
   }, [items.length]);
 
   // Navigate to a specific slide
   const goToSlide = useCallback((index: number) => {
     setActiveIndex(index);
+    // Reset hover state when slide changes
+    setIsHovering(false);
   }, []);
 
   // Reset timer when active index changes
@@ -61,7 +64,7 @@ const FeatureCarousel: React.FC<FeatureCarouselProps> = ({
     // Announce slide change to screen readers
     const announcement = document.getElementById('carousel-live-region');
     if (announcement) {
-      announcement.textContent = `Showing slide ${activeIndex + 1} of ${items.length}: ${items[activeIndex].heading}`;
+      announcement.textContent = `Showing slide ${activeIndex + 1} of ${items.length}`;
     }
   }, [activeIndex, autoAdvance, interval, isPaused, items]);
 
@@ -115,6 +118,7 @@ const FeatureCarousel: React.FC<FeatureCarouselProps> = ({
 
   const handleMouseEnter = () => {
     setIsPaused(true);
+    setIsHovering(true);
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
@@ -122,6 +126,7 @@ const FeatureCarousel: React.FC<FeatureCarouselProps> = ({
 
   const handleMouseLeave = () => {
     setIsPaused(false);
+    setIsHovering(false);
     if (autoAdvance) {
       resetTimer();
     }
@@ -159,7 +164,7 @@ const FeatureCarousel: React.FC<FeatureCarouselProps> = ({
 
   return (
     <div 
-      className="feature-carousel"
+      className={`feature-carousel relative w-full aspect-[5/4] md:aspect-auto md:h-full ${isHovering ? 'hover' : ''}`}
       ref={carouselRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -168,7 +173,7 @@ const FeatureCarousel: React.FC<FeatureCarouselProps> = ({
       onTouchEnd={handleTouchEnd}
       role="region"
       aria-roledescription="carousel"
-      aria-label="Feature highlights"
+      aria-label="Feature images"
       tabIndex={0}
     >
       {/* Visually hidden live region for screen readers */}
@@ -179,55 +184,61 @@ const FeatureCarousel: React.FC<FeatureCarouselProps> = ({
         aria-atomic="true"
       ></div>
       
-      <div className="carousel-container relative">
-        <div className="carousel-items">
-          {items.map((item, index) => (
-            <div 
-              key={item.id} 
-              className={`carousel-item-wrapper absolute w-full h-full transition-opacity duration-500 ease-in-out ${
-                index === activeIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
-              }`}
+      <div className="carousel-container relative w-full h-full overflow-hidden">
+        {items.map((item, index) => (
+          <div 
+            key={item.id} 
+            className={`carousel-item-wrapper absolute w-full h-full transition-opacity duration-500 ease-in-out ${
+              index === activeIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
+            }`}
+            aria-hidden={index !== activeIndex}
+          >
+            <FeatureCarouselItem
+              item={item}
+              isActive={index === activeIndex}
               aria-hidden={index !== activeIndex}
+            />
+          </div>
+        ))}
+        
+        {/* Navigation buttons - visibility based on hover state and screen size */}
+        {items.length > 1 && (
+          <>
+            <button
+              className={`carousel-nav-btn hidden sm:flex absolute left-4 top-1/2 z-20 h-10 w-10 md:h-12 md:w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white ${isHovering ? 'opacity-100' : 'opacity-0'} hover:bg-black/60 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-white/80 transition-all duration-300`}
+              onClick={prevSlide}
+              aria-label="Previous slide"
             >
-              <FeatureCarouselItem
-                item={item}
-                isActive={index === activeIndex}
-                aria-hidden={index !== activeIndex}
-              />
-            </div>
-          ))}
-        </div>
-        
-        {/* Navigation buttons */}
-        <button
-          className="carousel-nav-btn absolute left-4 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white"
-          onClick={prevSlide}
-          aria-label="Previous slide"
-        >
-          <ChevronLeftIcon className="h-8 w-8" />
-        </button>
-        
-        <button
-          className="carousel-nav-btn absolute right-4 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white"
-          onClick={nextSlide}
-          aria-label="Next slide"
-        >
-          <ChevronRightIcon className="h-8 w-8" />
-        </button>
+              <ChevronLeftIcon className="h-6 w-6 md:h-8 md:w-8" />
+            </button>
+            
+            <button
+              className={`carousel-nav-btn hidden sm:flex absolute right-4 top-1/2 z-20 h-10 w-10 md:h-12 md:w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white ${isHovering ? 'opacity-100' : 'opacity-0'} hover:bg-black/60 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-white/80 transition-all duration-300`}
+              onClick={nextSlide}
+              aria-label="Next slide"
+            >
+              <ChevronRightIcon className="h-6 w-6 md:h-8 md:w-8" />
+            </button>
+          </>
+        )}
       </div>
       
-      {/* Slide indicators */}
-      <div className="carousel-indicators absolute bottom-8 left-0 right-0 flex justify-center space-x-3 z-20">
-        {items.map((_, index) => (
-          <button
-            key={index}
-            className={`h-3 w-3 rounded-full ${index === activeIndex ? 'bg-amber-500' : 'bg-white/50'}`}
-            onClick={() => goToSlide(index)}
-            aria-label={`Go to slide ${index + 1}`}
-            aria-selected={index === activeIndex}
-          />
-        ))}
-      </div>
+      {/* Slide indicators - show only if there are multiple slides */}
+      {items.length > 1 && (
+        <div className="carousel-indicators absolute bottom-4 sm:bottom-6 left-0 right-0 flex justify-center space-x-2 z-20">
+          {items.map((_, index) => (
+            <button
+              key={index}
+              className={`h-2 w-2 sm:h-3 sm:w-3 rounded-full transition-all duration-300 ${
+                index === activeIndex ? 'bg-amber-500 scale-125' : 'bg-white/50 hover:bg-white/70'
+              }`}
+              onClick={() => goToSlide(index)}
+              aria-label={`Go to slide ${index + 1}`}
+              aria-selected={index === activeIndex}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

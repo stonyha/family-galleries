@@ -41,13 +41,18 @@ export default async function HomePage() {
   
   return (
     <Layout>
-      {featureCarouselItems.length > 0 && (
+      <HeroSection
+        title={title}
+        intro={intro}
+        imageUrl={heroImage}
+      />
+      {/*{featureCarouselItems.length > 0 && (
         <FeatureCarousel
           items={featureCarouselItems}
           autoAdvance={true}
           interval={8000}
         />
-      )}
+      )}*/}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <GalleryGrid
           galleries={featuredGalleries}
@@ -55,14 +60,8 @@ export default async function HomePage() {
           emptyMessage="Chưa có bộ sưu tập nào được tạo. Hãy quay lại sau!"
         />
       </div>
-      <HeroSection
-        title={title}
-        intro={intro}
-        imageUrl={heroImage}
-      />
-      
       {/* Quick Upload Button */}
-      <QuickUploadButton />          
+      {/*<QuickUploadButton />*/}
     </Layout>
   );
 }
