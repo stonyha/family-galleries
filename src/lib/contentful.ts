@@ -1,5 +1,6 @@
 import { createClient } from 'contentful';
 import { FeatureItem } from '@/components/carousel/FeatureCarousel';
+import { VideoItem, VideoListingPage } from '@/types/video';
 
 const client = createClient({
   space: process.env.CONTENTFUL_SPACE_ID || '',
@@ -274,6 +275,71 @@ export const getFeatureCarouselItems = async (limit = 3) => {
   } catch (error) {
     console.error('Error fetching feature carousel items:', error);
     return [];
+  }
+};
+
+export const getFeaturedVideos = async (limit = 6) => {
+  const cacheKey = `featured_videos_${limit}`;
+  const cachedData = getCachedData(cacheKey);
+  if (cachedData) return cachedData;
+
+  try {
+    const response = await client.getEntries({
+      content_type: 'video',
+      'fields.isFeatured': true,
+      order: ['fields.order'],
+      limit,
+    });
+
+    // Transform Contentful data to our VideoItem format
+    const videos: VideoItem[] = response.items.map((item: any) => {
+      const id = item.sys?.id || `video-${Math.random().toString(36).substr(2, 9)}`;
+      const fields = item.fields || {};
+      
+      return {
+        id,
+        title: fields.title || '',
+        description: fields.description || '',
+        vimeoVideo: fields.vimeoVideo || '',
+        thumbnail: fields.thumbnail,
+      };
+    });
+
+    return setCacheData(cacheKey, videos);
+  } catch (error) {
+    console.error('Error fetching featured videos:', error);
+    return [];
+  }
+};
+
+export const getVideoListingPage = async (): Promise<VideoListingPage | null> => {
+  const cacheKey = 'video_listing_page';
+  const cachedData = getCachedData(cacheKey);
+  if (cachedData) return cachedData;
+
+  try {
+    const response = await client.getEntries({
+      content_type: 'videoListingPage',
+      limit: 1,
+    });
+
+    if (response.items.length === 0) {
+      return null;
+    }
+
+    const page = response.items[0];
+    const fields = page.fields || {};
+
+    const transformedPage: VideoListingPage = {
+      fields: {
+        ...fields
+      },
+    };
+
+    return setCacheData(cacheKey, transformedPage);
+  } catch (error) {
+    console.error('Error fetching video listing page:', error);
+    return null;
   }
 };
 

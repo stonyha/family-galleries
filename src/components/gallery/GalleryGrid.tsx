@@ -48,7 +48,7 @@ export default function GalleryGrid({
   return (
     <div>
       {title && (
-        <h2 className="text-2xl font-bold text-gray-800 mb-8">{title}</h2>
+        <h2 className="text-3xl font-bold text-left mb-8">{title}</h2>
       )}
       
       {galleries.length > 0 ? (
