@@ -7,10 +7,11 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { PlayIcon } from '@heroicons/react/24/solid';
-import { ChevronLeftIcon, ChevronRightIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, ChevronRightIcon, XMarkIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import { useMediaQuery } from 'react-responsive';
 import { VideoItem } from '@/types/video';
 import { getVimeoThumbnail } from '@/utils/vimeo';
+import Link from 'next/link';
 
 type FeaturedVideosProps = {
   videos: VideoItem[];
@@ -62,7 +63,16 @@ const FeaturedVideos: React.FC<FeaturedVideosProps> = ({ videos }) => {
   return (
     <div className="featured-videos py-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold text-left mb-8">Videos Nổi Bật</h2>
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-3xl font-bold text-left">Videos Nổi Bật</h2>
+          <Link 
+            href="/videos" 
+            className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200"
+          >
+            Xem tất cả
+            <ArrowRightIcon className="w-5 h-5 ml-2" />
+          </Link>
+        </div>
         
         <div className="relative">
           <Swiper

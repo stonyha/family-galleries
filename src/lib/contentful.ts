@@ -1,6 +1,6 @@
 import { createClient } from 'contentful';
 import { FeatureItem } from '@/components/carousel/FeatureCarousel';
-import { VideoItem } from '@/types/video';
+import { VideoItem, VideoListingPage } from '@/types/video';
 
 const client = createClient({
   space: process.env.CONTENTFUL_SPACE_ID || '',
@@ -295,37 +295,7 @@ export const getFeaturedVideos = async (limit = 6) => {
     const videos: VideoItem[] = response.items.map((item: any) => {
       const id = item.sys?.id || `video-${Math.random().toString(36).substr(2, 9)}`;
       const fields = item.fields || {};
-
-      // Get thumbnail URL if available
-      let thumbnail = undefined;
-      if (fields.thumbnail && typeof fields.thumbnail === 'object') {
-        // Handle both direct object and linked asset cases
-        if (fields.thumbnail.fields?.file?.url) {
-          // This is a linked asset
-          thumbnail = {
-            secure_url: `https:${fields.thumbnail.fields.file.url}`,
-            width: fields.thumbnail.fields.file.details?.image?.width || 0,
-            height: fields.thumbnail.fields.file.details?.image?.height || 0,
-          };
-        } else if (fields.thumbnail.secure_url) {
-          // This is a direct object with secure_url
-          thumbnail = {
-            secure_url: fields.thumbnail.secure_url,
-            width: fields.thumbnail.width || 0,
-            height: fields.thumbnail.height || 0,
-          };
-        }
-      }
-
-      // Debug thumbnail data in development
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Video thumbnail data:', {
-          id,
-          thumbnail: fields.thumbnail,
-          transformed: thumbnail,
-        });
-      }
-
+      
       return {
         id,
         title: fields.title || '',
@@ -339,6 +309,37 @@ export const getFeaturedVideos = async (limit = 6) => {
   } catch (error) {
     console.error('Error fetching featured videos:', error);
     return [];
+  }
+};
+
+export const getVideoListingPage = async (): Promise<VideoListingPage | null> => {
+  const cacheKey = 'video_listing_page';
+  const cachedData = getCachedData(cacheKey);
+  if (cachedData) return cachedData;
+
+  try {
+    const response = await client.getEntries({
+      content_type: 'videoListingPage',
+      limit: 1,
+    });
+
+    if (response.items.length === 0) {
+      return null;
+    }
+
+    const page = response.items[0];
+    const fields = page.fields || {};
+
+    const transformedPage: VideoListingPage = {
+      fields: {
+        ...fields
+      },
+    };
+
+    return setCacheData(cacheKey, transformedPage);
+  } catch (error) {
+    console.error('Error fetching video listing page:', error);
+    return null;
   }
 };
 
