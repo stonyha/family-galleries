@@ -1,5 +1,6 @@
 import { createClient } from 'contentful';
 import { FeatureItem } from '@/components/carousel/FeatureCarousel';
+import { VideoItem } from '@/types/video';
 
 const client = createClient({
   space: process.env.CONTENTFUL_SPACE_ID || '',
@@ -273,6 +274,70 @@ export const getFeatureCarouselItems = async (limit = 3) => {
     return setCacheData(cacheKey, featureItems);
   } catch (error) {
     console.error('Error fetching feature carousel items:', error);
+    return [];
+  }
+};
+
+export const getFeaturedVideos = async (limit = 6) => {
+  const cacheKey = `featured_videos_${limit}`;
+  const cachedData = getCachedData(cacheKey);
+  if (cachedData) return cachedData;
+
+  try {
+    const response = await client.getEntries({
+      content_type: 'video',
+      'fields.isFeatured': true,
+      order: ['fields.order'],
+      limit,
+    });
+
+    // Transform Contentful data to our VideoItem format
+    const videos: VideoItem[] = response.items.map((item: any) => {
+      const id = item.sys?.id || `video-${Math.random().toString(36).substr(2, 9)}`;
+      const fields = item.fields || {};
+
+      // Get thumbnail URL if available
+      let thumbnail = undefined;
+      if (fields.thumbnail && typeof fields.thumbnail === 'object') {
+        // Handle both direct object and linked asset cases
+        if (fields.thumbnail.fields?.file?.url) {
+          // This is a linked asset
+          thumbnail = {
+            secure_url: `https:${fields.thumbnail.fields.file.url}`,
+            width: fields.thumbnail.fields.file.details?.image?.width || 0,
+            height: fields.thumbnail.fields.file.details?.image?.height || 0,
+          };
+        } else if (fields.thumbnail.secure_url) {
+          // This is a direct object with secure_url
+          thumbnail = {
+            secure_url: fields.thumbnail.secure_url,
+            width: fields.thumbnail.width || 0,
+            height: fields.thumbnail.height || 0,
+          };
+        }
+      }
+
+      // Debug thumbnail data in development
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Video thumbnail data:', {
+          id,
+          thumbnail: fields.thumbnail,
+          transformed: thumbnail,
+        });
+      }
+
+      return {
+        id,
+        title: fields.title || '',
+        description: fields.description || '',
+        vimeoVideo: fields.vimeoVideo || '',
+        thumbnail: fields.thumbnail,
+      };
+    });
+
+    return setCacheData(cacheKey, videos);
+  } catch (error) {
+    console.error('Error fetching featured videos:', error);
     return [];
   }
 };
