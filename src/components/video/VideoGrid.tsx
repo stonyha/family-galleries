@@ -13,22 +13,8 @@ export default function VideoGrid({ videos }: VideoGridProps) {
   const [activeVideo, setActiveVideo] = useState<VideoItem | null>(null);
 
   const getVimeoId = (url: string) => {
-    // Check if it's a share URL
-    if (url.includes('share')) {
-      return null;
-    }
-    // Handle standard Vimeo URLs
-    const match = url.match(/(?:vimeo\.com\/|video\/)(\d+)(?:\/|$)/);
+    const match = url.match(/(?:vimeo\.com\/|video\/)(\d+)/);
     return match ? match[1] : null;
-  };
-
-  const getPlayerUrl = (url: string) => {
-    const videoId = getVimeoId(url);
-    if (videoId) {
-      return `https://player.vimeo.com/video/${videoId}?autoplay=1`;
-    }
-    // For share URLs, use the URL directly
-    return url;
   };
 
   const handleVideoClick = (video: VideoItem) => {
@@ -43,7 +29,9 @@ export default function VideoGrid({ videos }: VideoGridProps) {
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {videos.map((video) => {
-          const thumbnailUrl = video.thumbnail?.secure_url || getVimeoThumbnail(video.vimeoVideo);
+          const thumbnailUrl = video.thumbnail && typeof video.thumbnail === 'object' && Array.isArray(video.thumbnail) && video.thumbnail[0]?.secure_url 
+            ? video.thumbnail[0].secure_url 
+            : getVimeoThumbnail(video.vimeoVideo);
           
           return (
             <div
@@ -56,6 +44,10 @@ export default function VideoGrid({ videos }: VideoGridProps) {
                   src={thumbnailUrl}
                   alt={video.title || 'Video thumbnail'}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    console.error('Error loading thumbnail:', video.thumbnail);
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
                 />
               ) : (
                 <div className="w-full h-full bg-gray-200 flex items-center justify-center">
@@ -95,7 +87,7 @@ export default function VideoGrid({ videos }: VideoGridProps) {
               <XMarkIcon className="w-6 h-6" />
             </button>
             <iframe
-              src={getPlayerUrl(activeVideo.vimeoVideo)}
+              src={`https://player.vimeo.com/video/${getVimeoId(activeVideo.vimeoVideo)}?autoplay=1`}
               className="w-full h-full"
               allow="autoplay; fullscreen"
               allowFullScreen
