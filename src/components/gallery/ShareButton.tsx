@@ -31,13 +31,13 @@ export default function ShareButton({ galleryId, slug }: ShareButtonProps) {
       });
       
       if (!response.ok) {
-        throw new Error('Failed to generate share link');
+        throw new Error('Lỗi tạo link chia sẻ');
       }
       
       const data = await response.json();
       setShareUrl(data.shareUrl);
     } catch (err) {
-      setError('Could not generate share link. Please try again.');
+      setError('Không thể tạo link chia sẻ. Vui lòng thử lại.');
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -52,7 +52,7 @@ export default function ShareButton({ galleryId, slug }: ShareButtonProps) {
         setTimeout(() => setCopied(false), 2000);
       }
     } catch (err) {
-      console.error('Failed to copy: ', err);
+      console.error('Không thể sao chép: ', err);
     }
   };
 
@@ -102,7 +102,7 @@ export default function ShareButton({ galleryId, slug }: ShareButtonProps) {
       {showSharePanel && (
         <div className="absolute bottom-16 right-0 mb-2 bg-white rounded-lg shadow-xl p-4 w-80">
           <div className="flex justify-between items-center mb-3">
-            <h3 className="text-lg font-semibold text-gray-800">Share Gallery</h3>
+            <h3 className="text-lg font-semibold text-gray-800">Chia sẻ bộ sưu tập</h3>
             <button 
               onClick={() => setShowSharePanel(false)}
               className="text-gray-400 hover:text-gray-600"
@@ -160,13 +160,13 @@ export default function ShareButton({ galleryId, slug }: ShareButtonProps) {
                 </button>
               </div>
               <p className="text-xs text-gray-500">
-                This link expires in 1 hour and can be accessed by anyone without login.
+                Link này sẽ hết hạn trong 1 giờ và có thể truy cập bởi bất kỳ ai mà không cần đăng nhập.
               </p>
               <button
                 onClick={generateShareLink}
                 className="text-sm text-amber-600 hover:text-amber-800 transition-colors self-start"
               >
-                Generate new link
+                Tạo link mới
               </button>
             </div>
           ) : (
@@ -182,7 +182,7 @@ export default function ShareButton({ galleryId, slug }: ShareButtonProps) {
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
                 )}
-                <span>Generate Link</span>
+                <span>Tạo link</span>
               </button>
             </div>
           )}
