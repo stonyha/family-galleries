@@ -8,7 +8,7 @@ import { getHomePage, getFeaturedGalleries, getFeatureCarouselItems, getFeatured
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Sipikidi\'s Galleries | Lưu giữ kỷ niệm',
+  title: 'Sipikidi\'s Family | Lưu giữ kỷ niệm',
   description: 'Một bộ sưu tập các bức ảnh gia đình từ các sự kiện và lễ hội.',
 };
 
@@ -66,7 +66,7 @@ export default async function HomePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <GalleryGrid
           galleries={featuredGalleries}
-          title="Bộ sưu tập nổi bật"
+          title="Gallery nổi bật"
           emptyMessage="Chưa có bộ sưu tập nào được tạo. Hãy quay lại sau!"
         />
       </div>

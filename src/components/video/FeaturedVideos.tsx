@@ -64,7 +64,7 @@ const FeaturedVideos: React.FC<FeaturedVideosProps> = ({ videos }) => {
     <div className="featured-videos py-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-left">Videos Nổi Bật</h2>
+          <h2 className="text-3xl font-bold text-left">Video nổi bật</h2>
           <Link 
             href="/videos" 
             className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200"
