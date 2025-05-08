@@ -40,4 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 # SpecStory explanation file
+/.specstory/
+# SpecStory explanation file
 .specstory/.what-is-this.md
