@@ -52,7 +52,7 @@ export default function GalleryGrid({
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-3xl font-bold text-left">{title}</h2>
           <Link 
-            href="/videos" 
+            href="/galleries" 
             className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200"
           >
             Xem tất cả
