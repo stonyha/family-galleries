@@ -11,22 +11,22 @@ export default function HeroSection({ title, intro, imageUrl }: HeroSectionProps
   return (
     <div className="relative bg-amber-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="pt-16 pb-20 md:pt-24 md:pb-28 lg:pt-32 lg:pb-36">
+        <div className="pt-8 pb-12 md:pt-12 md:pb-16 lg:pt-16 lg:pb-20">
           <div className="lg:grid lg:grid-cols-12 lg:gap-8">
             <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left flex flex-col justify-center">
               <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
                 {title}
               </h1>
               
-              <p className="mt-6 text-lg text-gray-600">
+              <p className="mt-4 text-lg text-gray-600">
                 {intro}
               </p>
               
-              <div className="mt-8 sm:flex sm:justify-center lg:justify-start">
+              <div className="mt-6 sm:flex sm:justify-center lg:justify-start">
                 <div className="rounded-md shadow">
                   <Link
                     href="/galleries"
-                    className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-amber-600 hover:bg-amber-700 md:py-4 md:text-lg md:px-10"
+                    className="w-full flex items-center justify-center px-6 py-2 border border-transparent text-base font-medium rounded-md text-white bg-amber-600 hover:bg-amber-700 md:py-3 md:text-lg md:px-8"
                   >
                     Xem thư viện
                   </Link>
@@ -34,7 +34,7 @@ export default function HeroSection({ title, intro, imageUrl }: HeroSectionProps
                 <div className="mt-3 sm:mt-0 sm:ml-3">
                   <Link
                     href="/about"
-                    className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-amber-700 bg-amber-100 hover:bg-amber-200 md:py-4 md:text-lg md:px-10"
+                    className="w-full flex items-center justify-center px-6 py-2 border border-transparent text-base font-medium rounded-md text-amber-700 bg-amber-100 hover:bg-amber-200 md:py-3 md:text-lg md:px-8"
                   >
                     Về chúng tôi
                   </Link>
@@ -42,7 +42,7 @@ export default function HeroSection({ title, intro, imageUrl }: HeroSectionProps
               </div>
             </div>
             
-            <div className="mt-12 relative sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-6 lg:flex lg:items-center">
+            <div className="mt-8 relative sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-6 lg:flex lg:items-center">
               {imageUrl ? (
                 <div className="relative mx-auto w-full rounded-lg shadow-lg lg:max-w-md">
                   <Image 
@@ -55,10 +55,10 @@ export default function HeroSection({ title, intro, imageUrl }: HeroSectionProps
                   />
                 </div>
               ) : (
-                <div className="relative mx-auto w-full rounded-lg shadow-lg lg:max-w-md bg-amber-200 h-80 flex items-center justify-center">
+                <div className="relative mx-auto w-full rounded-lg shadow-lg lg:max-w-md bg-amber-200 h-64 flex items-center justify-center">
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
-                    className="h-16 w-16 text-amber-600" 
+                    className="h-12 w-12 text-amber-600" 
                     fill="none" 
                     viewBox="0 0 24 24" 
                     stroke="currentColor"

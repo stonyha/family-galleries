@@ -74,6 +74,26 @@
           },
           "required": false,
           "localized": false
+        },
+        {
+          "id": "thumbnail",
+          "name": "Thumbnail",
+          "type": "Object",
+          "localized": false,
+          "required": false,
+          "validations": [],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "cloudImages",
+          "name": "Cloud Images",
+          "type": "Object",
+          "localized": false,
+          "required": false,
+          "validations": [],
+          "disabled": false,
+          "omitted": false
         }
       ]
     },
@@ -120,6 +140,22 @@
           },
           "required": false,
           "localized": false
+        },
+        {
+          "id": "featureCarouselItems",
+          "name": "Feature Carousel Items",
+          "type": "Array",
+          "items": {
+            "type": "Link",
+            "linkType": "Entry",
+            "validations": [
+              {
+                "linkContentType": ["featureCarouselItem"]
+              }
+            ]
+          },
+          "required": false,
+          "localized": false
         }
       ]
     },
@@ -150,6 +186,203 @@
           "linkType": "Asset",
           "required": false,
           "localized": false
+        }
+      ]
+    },
+    {
+      "id": "featureCarouselItem",
+      "name": "Feature Carousel Item",
+      "description": "An item for the feature carousel/slider",
+      "displayField": "heading",
+      "fields": [
+        {
+          "id": "heading",
+          "name": "Heading",
+          "type": "Symbol",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "summary",
+          "name": "Summary",
+          "type": "Text",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "ctaLabel",
+          "name": "CTA Label",
+          "type": "Symbol",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "ctaLink",
+          "name": "CTA Link",
+          "type": "Link",
+          "linkType": "Entry",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "image",
+          "name": "Image",
+          "type": "Link",
+          "linkType": "Asset",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "order",
+          "name": "Order",
+          "type": "Integer",
+          "required": true,
+          "localized": false
+        },
+        {
+          "id": "imageMobile",
+          "name": "Image (Mobile)",
+          "type": "Object",
+          "localized": false,
+          "required": false,
+          "validations": [],
+          "disabled": false,
+          "omitted": false
+        }
+      ]
+    },
+    {
+      "id": "video",
+      "name": "Video",
+      "description": "",
+      "displayField": "title",
+      "fields": [
+        {
+          "id": "title",
+          "name": "Title",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "description",
+          "name": "Description",
+          "type": "Text",
+          "localized": false,
+          "required": false,
+          "validations": [],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "thumbnail",
+          "name": "Thumbnail",
+          "type": "Object",
+          "localized": false,
+          "required": false,
+          "validations": [],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "vimeoVideo",
+          "name": "Vimeo Video",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "isFeatured",
+          "name": "IsFeatured",
+          "type": "Boolean",
+          "localized": false,
+          "required": false,
+          "validations": [],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "order",
+          "name": "Order",
+          "type": "Integer",
+          "localized": false,
+          "required": false,
+          "validations": [],
+          "disabled": false,
+          "omitted": false
+        }
+      ]
+    },
+    {
+      "id": "videoListingPage",
+      "name": "Video Listing Page",
+      "description": "",
+      "displayField": "heading",
+      "fields": [
+        {
+          "id": "heading",
+          "name": "Heading",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "slug",
+          "name": "slug",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+            {
+              "unique": true
+            }
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "description",
+          "name": "Description",
+          "type": "Text",
+          "localized": false,
+          "required": false,
+          "validations": [],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "coverImage",
+          "name": "Cover Image",
+          "type": "Object",
+          "localized": false,
+          "required": false,
+          "validations": [],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "videos",
+          "name": "Videos",
+          "type": "Array",
+          "localized": false,
+          "required": false,
+          "validations": [],
+          "disabled": false,
+          "omitted": false,
+          "items": {
+            "type": "Link",
+            "validations": [],
+            "linkType": "Entry"
+          }
         }
       ]
     }

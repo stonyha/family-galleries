@@ -10,12 +10,12 @@ type LayoutProps = {
 
 export default function Layout({ 
   children, 
-  title = 'Sipikidi\'s Galleries', 
+  title = 'Sipikidi\'s Family', 
   description = 'A collection of family photo galleries and memories' 
 }: LayoutProps) {
-  const fullTitle = title === 'Sipikidi\'s Galleries' 
+  const fullTitle = title === 'Sipikidi\'s Family' 
     ? title 
-    : `${title} | Sipikidi's Galleries`;
+    : `${title} | Sipikidi's Family`;
   
   return (
     <div className="min-h-screen flex flex-col">

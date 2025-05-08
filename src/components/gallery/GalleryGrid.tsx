@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 import GalleryCard from './GalleryCard';
-
+import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link';
 type GalleryGridProps = {
   galleries: any[]; // We'll cast this to our Contentful types when used
   title?: string;
@@ -48,7 +49,16 @@ export default function GalleryGrid({
   return (
     <div>
       {title && (
-        <h2 className="text-2xl font-bold text-gray-800 mb-8">{title}</h2>
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-3xl font-bold text-left">{title}</h2>
+          <Link 
+            href="/galleries" 
+            className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200"
+          >
+            Xem tất cả
+            <ArrowRightIcon className="w-5 h-5 ml-2" />
+          </Link>
+        </div>
       )}
       
       {galleries.length > 0 ? (
