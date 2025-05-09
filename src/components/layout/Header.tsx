@@ -150,20 +150,6 @@ export default function Header() {
   const navItems = useMemo(() => (
     <>
       <Link
-        href="/"
-        className="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-50 transition-colors"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5 mr-2"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-        </svg>
-        Trang chủ
-      </Link>
-      <Link
         href="/galleries"
         className="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-50 transition-colors"
       >
@@ -190,6 +176,20 @@ export default function Header() {
           <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
         </svg>
         Video
+      </Link>
+      <Link
+        href="/blog"
+        className="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-50 transition-colors"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5 mr-2"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+        </svg>
+        Blog
       </Link>
       <Link
         href="/about"
@@ -337,23 +337,6 @@ export default function Header() {
         <div className="md:hidden">
           <div className="pt-2 pb-3 space-y-1">
             <Link
-              href="/"
-              className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-amber-600 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-800"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <div className="flex items-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-2"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                </svg>
-                Trang chủ
-              </div>
-            </Link>
-            <Link
               href="/galleries"
               className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-amber-600 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-800"
               onClick={() => setIsMenuOpen(false)}
@@ -385,6 +368,23 @@ export default function Header() {
                   <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
                 </svg>
                 Video
+              </div>
+            </Link>
+            <Link
+              href="/blog"
+              className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-amber-600 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-800"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <div className="flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-2"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                </svg>
+                Blog
               </div>
             </Link>
             <Link

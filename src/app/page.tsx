@@ -2,9 +2,11 @@ import HeroSection from '@/components/home/HeroSection';
 import GalleryGrid from '@/components/gallery/GalleryGrid';
 import FeatureCarousel from '@/components/carousel/FeatureCarousel';
 import FeaturedVideos from '@/components/video/FeaturedVideos';
+import FeaturedBlogs from '@/components/blog/FeaturedBlogs';
 import Layout from '@/components/layout/Layout';
 import QuickUploadButton from '@/components/home/QuickUploadButton';
 import { getHomePage, getFeaturedGalleries, getFeatureCarouselItems, getFeaturedVideos } from '@/lib/contentful';
+import { getLatestBlogPosts } from '@/lib/api/blog';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -19,6 +21,7 @@ export default async function HomePage() {
   const featuredGalleries = await getFeaturedGalleries(3);
   const featureCarouselItems = await getFeatureCarouselItems(5);
   const featuredVideos = await getFeaturedVideos(6);
+  const latestBlogPosts = await getLatestBlogPosts(3);
   
   // Debug video data
   if (process.env.NODE_ENV === 'development') {
@@ -70,6 +73,9 @@ export default async function HomePage() {
           emptyMessage="Chưa có bộ sưu tập nào được tạo. Hãy quay lại sau!"
         />
       </div>
+      {latestBlogPosts.length > 0 && (
+        <FeaturedBlogs posts={latestBlogPosts} />
+      )}
       {/* Quick Upload Button */}
       {/*<QuickUploadButton />*/}
     </Layout>
