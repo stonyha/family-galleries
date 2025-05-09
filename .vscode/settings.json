@@ -1,3 +1,5 @@
 {
-    "zencoder.enableRepoIndexing": true
+    "zencoder.enableRepoIndexing": false,
+    "specstory.autoSave.enabled": false,
+    "specstory.helpUsImprove": false
 }
