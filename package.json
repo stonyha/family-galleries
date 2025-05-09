@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.4.2",
+    "@contentful/rich-text-react-renderer": "^16.0.1",
+    "@contentful/rich-text-types": "^17.0.0",
     "@heroicons/react": "^2.0.18",
     "contentful": "^11.5.13",
     "contentful-management": "^11.0.0",

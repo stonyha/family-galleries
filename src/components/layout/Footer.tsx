@@ -14,12 +14,6 @@ export default function Footer() {
           
           <nav className="flex flex-wrap justify-center space-x-6">
             <Link 
-              href="/"
-              className="text-sm text-gray-500 hover:text-gray-700"
-            >
-              Trang chủ
-            </Link>
-            <Link 
               href="/galleries"
               className="text-sm text-gray-500 hover:text-gray-700"
             >
@@ -30,6 +24,12 @@ export default function Footer() {
               className="text-sm text-gray-500 hover:text-gray-700"
             >
               Video
+            </Link>
+            <Link 
+              href="/blog"
+              className="text-sm text-gray-500 hover:text-gray-700"
+            >
+              Blog
             </Link>
             <Link 
               href="/about"
